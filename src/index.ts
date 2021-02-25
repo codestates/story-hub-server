@@ -2,7 +2,7 @@ import express, { urlencoded } from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 
-const app = express();
+const app:express.Application = express();
 
 app.use(express.json());
 app.use(urlencoded({ extended: false }));
@@ -19,7 +19,7 @@ app.get('/', (req: express.Request, res: express.Response) => {
   res.send('hello world');
 });
 
-const port = 4000;
+const port:number = 4000;
 
 app.listen(port, () => {
   console.log(`running on ${port}`);
