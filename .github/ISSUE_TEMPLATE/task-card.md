@@ -2,7 +2,7 @@
 name: task-card
 about: Describe this issue template's purpose here.
 title: ''
-labels: ''
+labels: server
 assignees: ''
 
 ---
@@ -17,8 +17,8 @@ assignees: ''
 ---
 
 ### ISSUE
-- Group:  `client`, `server`, `sr`
-- Type: `bug`, `feature`, `delete`
+- Group:  `server`
+- Type: `feature`
 - Detail: fix actions from client redux
 
 ### TODO
@@ -37,6 +37,6 @@ assignees: ''
 
 ### Labels
 - Estimated time: `E: 1h`
-- Group : `client`, `server`
+- Group :  `server`
 - Sprint: `Sprint__NUMBER__`
 - Urgency: `High`, `Middle`, `Low`
