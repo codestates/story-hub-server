@@ -21,7 +21,7 @@
 ### Front
    * React, React-Hooks, axios, Redux
 ### Back
-   * NODE js, EXPRESS, MYSql, TS 
+   * NODE js, TypeScript, MYSql 
 
 ## Architecture
 ### Client-Side flow chart[STATIC]
