@@ -1,4 +1,7 @@
-import express, { Application, urlencoded } from 'express';
+import express,
+{
+  Application, urlencoded, Request, Response
+} from 'express';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -11,6 +14,9 @@ export default class App {
     this.app = express();
     this.settings();
     this.middlewares();
+    this.app.get('/', (req : Request, res : Response) => {
+      res.send('hellworld');
+    });
   }
 
   settings() {
