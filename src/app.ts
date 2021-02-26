@@ -1,14 +1,11 @@
-import express,
-{
-  Application, urlencoded, Request, Response
-} from 'express';
+import express, { Application, urlencoded, Request, Response } from 'express';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import routes from './routes';
 
 export default class App {
-  app : Application;
+  app: Application;
 
   constructor(private port: number | string) {
     this.port = port;
@@ -16,7 +13,7 @@ export default class App {
     this.settings();
     this.middlewares();
     this.routes();
-    this.app.get('/', (req : Request, res : Response) => {
+    this.app.get('/', (req: Request, res: Response) => {
       res.send('hellworld');
     });
   }
@@ -30,11 +27,13 @@ export default class App {
     this.app.use(express.json());
     this.app.use(urlencoded({ extended: false }));
     this.app.use(cookieParser());
-    this.app.use(cors({
-      origin: 'http://localhost:3000',
-      methods: ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'],
-      credentials: true
-    }));
+    this.app.use(
+      cors({
+        origin: 'http://localhost:3000',
+        methods: ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'],
+        credentials: true,
+      })
+    );
   }
 
   routes() {
