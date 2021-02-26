@@ -5,6 +5,7 @@ import express,
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import routes from './routes';
 
 export default class App {
   app : Application;
@@ -14,6 +15,7 @@ export default class App {
     this.app = express();
     this.settings();
     this.middlewares();
+    this.routes();
     this.app.get('/', (req : Request, res : Response) => {
       res.send('hellworld');
     });
@@ -33,6 +35,10 @@ export default class App {
       methods: ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'],
       credentials: true
     }));
+  }
+
+  routes() {
+    this.app.use(routes);
   }
 
   async listen() {
