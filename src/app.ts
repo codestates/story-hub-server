@@ -1,12 +1,12 @@
-import express, { Application } from 'express';
+import express, { Application, urlencoded } from 'express';
 import morgan from 'morgan';
-import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import cors from 'cors';
 
 export default class App {
-  private app: Application;
+  app : Application;
 
-  constructor(private port?: number | string) {
+  constructor(private port: number | string) {
     this.port = port;
     this.app = express();
     this.settings();
@@ -19,16 +19,14 @@ export default class App {
 
   middlewares() {
     this.app.use(morgan('dev'));
-    this.app.use(express.urlencoded({ extended: false }));
     this.app.use(express.json());
-    this.app.use(
-      cors({
-        origin: 'http://localhost:3000',
-        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-        credentials: true,
-      })
-    );
+    this.app.use(urlencoded({ extended: false }));
     this.app.use(cookieParser());
+    this.app.use(cors({
+      origin: 'http://localhost:3000',
+      methods: ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'],
+      credentials: true
+    }));
   }
 
   async listen() {
