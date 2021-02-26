@@ -14,7 +14,7 @@ export default class App {
   }
 
   settings() {
-    this.app.set('port', this.port || process.env.PORT || 3000);
+    this.app.set('port', this.port || 4000);
   }
 
   middlewares() {
@@ -31,6 +31,6 @@ export default class App {
 
   async listen() {
     await this.app.listen(this.app.get('port'));
-    console.log('server start on', this.app.get('port'));
+    console.log('server on port', this.app.get('port'));
   }
 }
