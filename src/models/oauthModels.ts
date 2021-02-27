@@ -2,7 +2,7 @@ import connect from '../database';
 import { userInfo } from '../interface/Oauth';
 
 const oauthModels = {
-  singWithLogin: async (arg: userInfo): Promise<void> => {
+  signWithLogin: async (arg: userInfo): Promise<void> => {
     try {
       const conn = await connect();
 
