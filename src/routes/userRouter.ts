@@ -6,7 +6,7 @@ const userRouter = Router();
 
 userRouter
   .post('/login')
-  .post('/kakao')
+  .post('/kakao', oauthModule.kakao)
   .post('/google', oauthModule.google)
   .post('/signup')
   .post('/logout')
