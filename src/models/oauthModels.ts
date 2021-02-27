@@ -1,5 +1,5 @@
 import connect from '../database';
-import { KakaoUser } from '../interface/Oauth';
+import { KakaoUser, userInfo } from '../interface/Oauth';
 
 const oauthModels = {
   kakao: async (arg: KakaoUser): Promise<void> => {
@@ -17,6 +17,24 @@ const oauthModels = {
       }
     } catch (err) {
       console.log(err);
+    }
+  },
+  google: async (arg: userInfo): Promise<userInfo> => {
+    try {
+      const conn = await connect();
+      const sql = 'SELECT * FROM USERS WHERE email = ?';
+      const check = await conn.query(sql, arg.email);
+
+      if (check[0].toString.length === 0) {
+        const insertSql = 'INSERT INTO USERS (email, user_name, nickname) values (?, ?, ?)';
+        const create = await conn.query(insertSql, [arg.email, arg.id, arg.name]);
+        console.log(create);
+        return arg;
+      }
+      return arg;
+    } catch (err) {
+      console.log(err);
+      return err;
     }
   },
 };
