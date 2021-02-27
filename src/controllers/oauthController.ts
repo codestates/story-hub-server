@@ -15,12 +15,12 @@ const oauthModule = {
         },
       });
       const { email, profile } = userInfo.data.kakao_account;
-      const { nickname } = profile;
-      const userName = userInfo.data.id;
+      const name = profile.nickname;
+      const { id } = userInfo.data;
 
-      await oauthModels.kakao({ email, userName, nickname });
+      await oauthModels.singWithLogin({ id, email, name });
 
-      return res.json({ email, userName, nickname });
+      return res.json({ id, email, name });
     } catch (err) {
       return res.send(err);
     }
@@ -32,7 +32,7 @@ const oauthModule = {
       });
       const info = userinfo.data;
       const { id, email, name } = info;
-      await oauthModels.google({ id, email, name });
+      await oauthModels.singWithLogin({ id, email, name });
 
       return res.json({ id, email, name });
     } catch (err) {
