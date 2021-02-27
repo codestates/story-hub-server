@@ -1,11 +1,13 @@
 import { Router } from 'express';
+import controllerModule from '../controllers';
 
+const { oauthModule } = controllerModule;
 const userRouter = Router();
 
 userRouter
   .post('/login')
   .post('/kakao')
-  .post('/google')
+  .post('/google', oauthModule.google)
   .post('/signup')
   .post('/logout')
   .get('/info')
