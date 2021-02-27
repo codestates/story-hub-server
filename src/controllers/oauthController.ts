@@ -18,7 +18,7 @@ const oauthModule = {
       const name = profile.nickname;
       const { id } = userInfo.data;
 
-      await oauthModels.singWithLogin({ id, email, name });
+      await oauthModels.signWithLogin({ id, email, name });
 
       return res.json({ id, email, name });
     } catch (err) {
@@ -32,7 +32,7 @@ const oauthModule = {
       });
       const info = userinfo.data;
       const { id, email, name } = info;
-      await oauthModels.singWithLogin({ id, email, name });
+      await oauthModels.signWithLogin({ id, email, name });
 
       return res.json({ id, email, name });
     } catch (err) {
