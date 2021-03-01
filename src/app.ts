@@ -2,8 +2,10 @@ import express, { Application, urlencoded, Request, Response } from 'express';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import dotenv from 'dotenv';
 import routes from './routes';
 
+dotenv.config();
 export default class App {
   app: Application;
 

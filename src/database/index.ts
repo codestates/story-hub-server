@@ -1,7 +1,4 @@
 import { createPool } from 'mysql2/promise';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 export default async function connect() {
   const connection = await createPool({
