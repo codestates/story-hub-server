@@ -1,5 +1,5 @@
 import connect from '../database';
-import { AddBoard } from '../interface/Board';
+import { AddBoard, BoardList } from '../interface/Board';
 
 const boardModels = {
   createBoard: async (args: AddBoard): Promise<string> => {
@@ -14,7 +14,6 @@ const boardModels = {
 
       let nextIndex = JSON.parse(JSON.stringify(totalCount[0]));
       const findIndex = nextIndex.length === 0 ? (nextIndex = 1) : nextIndex[0].board_index + 1;
-      console.log('findIndex', findIndex);
 
       // insert board
       const insertBoardSql = `
@@ -48,6 +47,22 @@ const boardModels = {
     } catch (err) {
       return err;
     }
+  },
+  list: async (): Promise<BoardList> => {
+    const conn = await connect();
+
+    const hotStorySql = `
+    select b.*, u.nickname from boards as b inner join users as u on u.email = b.email ORDER BY b.up_count DESC;
+    `;
+    const hotStoryList = await conn.query(hotStorySql);
+    const convertHotStory = JSON.parse(JSON.stringify(hotStoryList));
+
+    const newStorySql = `
+    select b.*, u.nickname from boards as b inner join users as u on u.email = b.email ORDER BY b.created_at DESC;
+    `;
+    const newStoryList = await conn.query(newStorySql);
+    const convertNewStory = JSON.parse(JSON.stringify(newStoryList));
+    return { hotStory: convertHotStory, newStory: convertNewStory };
   },
 };
 
