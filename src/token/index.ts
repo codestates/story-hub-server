@@ -14,8 +14,9 @@ const tokenModule = {
 
   verifyAccessToken: (accessToken: string): generalUserInfo => {
     const userInfo = jwt.verify(accessToken, ACCESS_SECRET);
-    console.log(userInfo);
-    return { email: 'email' };
+    const result = JSON.parse(JSON.stringify(userInfo));
+
+    return { email: result.email };
   },
 };
 
