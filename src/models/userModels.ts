@@ -1,11 +1,11 @@
 import connect from '../database';
-import { generalUserInfo } from '../interface/generalUser';
+import { userInfo } from '../interface/user';
 import tokenModule from '../token';
 
 const { createAccessToken } = tokenModule;
 
 const userModels = {
-  findUser: async (arg: generalUserInfo): Promise<generalUserInfo> => {
+  findUser: async (arg: userInfo): Promise<userInfo> => {
     try {
       const conn = await connect();
       const idCheckQuery = `
@@ -21,7 +21,7 @@ const userModels = {
       return err;
     }
   },
-  loginUser: async (arg: generalUserInfo): Promise<generalUserInfo> => {
+  loginUser: async (arg: userInfo): Promise<userInfo> => {
     try {
       const conn = await connect();
       const loginCheckQuery = `
@@ -36,7 +36,7 @@ const userModels = {
         email: userObj[0].email,
         userName: userObj[0].user_name,
         nickname: userObj[0].nickname,
-        onError: false,
+        onCheck: false,
       };
       const accessToken = createAccessToken(findUserInfo);
       return { accessToken };
@@ -44,12 +44,26 @@ const userModels = {
       return err;
     }
   },
-  createUser: async (arg: generalUserInfo): Promise<void> => {
+  createUser: async (arg: userInfo): Promise<void> => {
     const conn = await connect();
     const signupQuery = `
       INSERT INTO USERS(email, password, user_name, nickname) values (?, ?, ?, ?);
     `;
     await conn.query(signupQuery, [arg.email, arg.password, arg.userName, arg.nickname]);
+  },
+
+  updateUser: async (arg: userInfo): Promise<string> => {
+    const conn = await connect();
+    const updateQuery = `
+      UPDATE USERS set nickname = ? where email =?;
+    `;
+    await conn.query(updateQuery, [arg.nickname, arg.email]);
+    const accessToken = createAccessToken({
+      email: arg.email,
+      userName: arg.userName,
+      nickname: arg.nickname,
+    });
+    return accessToken;
   },
 };
 
