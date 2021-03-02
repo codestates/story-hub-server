@@ -1,26 +1,16 @@
 import axios from 'axios';
 import { Request, Response } from 'express';
 import oauthModels from '../models/oauthModels';
+import tokenModule from '../token';
 
 const oauthModule = {
   kakao: async (req: Request, res: Response): Promise<Response> => {
     try {
       const accessToken = req.body.access_token;
-      const userInfo = await axios({
-        url: 'https://kapi.kakao.com/v2/user/me',
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/x-www-from/urlencoded;charest=utf-8',
-        },
-      });
-      const { email, profile } = userInfo.data.kakao_account;
-      const name = profile.nickname;
-      const { id } = userInfo.data;
-
-      await oauthModels.signWithLogin({ id, email, name });
-
-      return res.json({ id, email, name });
+      const result = await tokenModule.verifyKakaoAccessToken(accessToken);
+      const { email, id, name } = result;
+      await oauthModels.signWithLogin({ email, id, name });
+      return res.json({ accessToken, type: 1 });
     } catch (err) {
       return res.send(err);
     }

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import crypto from 'crypto';
 import userModels from '../models/userModels';
+import tokenModule from '../token';
 
 const userModule = {
   login: async (req: Request, res: Response): Promise<Response> => {
@@ -92,6 +93,23 @@ const userModule = {
     } catch (err) {
       return err;
     }
+  },
+  verifyUser: async (loginType: number, token: string) => {
+    let email;
+    if (loginType === 0) {
+      // 일반 유저
+      const result = await tokenModule.verifyAccessToken(token);
+      email = result.email;
+    } else if (loginType === 1) {
+      // 카카오 유저
+      const result = await tokenModule.verifyKakaoAccessToken(token);
+      email = result.email;
+    } else {
+      // 구글 유저
+      const result = await tokenModule.verifyKakaoAccessToken(token);
+      email = result.email;
+    }
+    return email;
   },
 };
 
