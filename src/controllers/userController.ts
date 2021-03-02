@@ -24,7 +24,7 @@ const userModule = {
         return res.status(409).send('비밀번호가 틀렸거나, 탈퇴한 유저입니다.');
       }
       const { accessToken } = login;
-      return res.json({
+      return res.cookie('accessToken', accessToken).json({
         data: {
           accessToken,
         },
@@ -100,6 +100,18 @@ const userModule = {
     }
   },
 
+  withdraw: async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const token = String(req.headers.authorization?.split(' ')[1]);
+      const { loginType } = req.body;
+      const { email } = await getUserInfo(token, loginType);
+      await userModels.withdrawUser({ email });
+      return res.send('OK');
+    } catch (err) {
+      return err;
+    }
+  },
+  // TODO: 관리자 페이지에서 삭제요청을 보낼수 있는게 맞을듯
   delete: async (req: Request, res: Response): Promise<Response> => {
     try {
       return res.send('test');

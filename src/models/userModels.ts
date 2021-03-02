@@ -65,6 +65,14 @@ const userModels = {
     });
     return accessToken;
   },
+
+  withdrawUser: async (arg: userInfo): Promise<void> => {
+    const conn = await connect();
+    const withdrawQuery = `
+      UPDATE USERS set is_delete = 1 where email = ?
+    `;
+    await conn.query(withdrawQuery, arg.email);
+  },
 };
 
 export default userModels;
