@@ -1,10 +1,7 @@
 import { Request, Response } from 'express';
 import crypto from 'crypto';
 import userModels from '../models/userModels';
-import tokenModule from '../token';
-import { generalUserInfo } from '../interface/generalUser';
-import { oauthUserInfo } from '../interface/Oauth';
-import verifyModule from '../token/verifyToken';
+import { getUserInfo } from './common/function';
 
 const userModule = {
   login: async (req: Request, res: Response): Promise<Response> => {
@@ -75,9 +72,14 @@ const userModule = {
     try {
       const token = String(req.headers.authorization?.split(' ')[1]);
       const { loginType } = req.body;
-      const userInfo = await verifyModule.verifyUser(loginType, token);
+      const { email, nickname, userName } = await getUserInfo(token, loginType);
+
       return res.json({
-        userInfo,
+        data: {
+          email,
+          nickname,
+          userName,
+        },
       });
     } catch (err) {
       return err;
@@ -86,7 +88,13 @@ const userModule = {
 
   modify: async (req: Request, res: Response): Promise<Response> => {
     try {
-      return res.send('test');
+      const token = String(req.headers.authorization?.split(' ')[1]);
+      const { loginType, nickname } = req.body;
+      const { email, userName } = await getUserInfo(token, loginType);
+      const newToken = await userModels.updateUser({ email, nickname, userName });
+      return res.json({
+        accessToken: newToken,
+      });
     } catch (err) {
       return err;
     }
@@ -98,26 +106,6 @@ const userModule = {
     } catch (err) {
       return err;
     }
-  },
-  verifyUser: async (
-    loginType: number,
-    token: string
-  ): Promise<oauthUserInfo | generalUserInfo> => {
-    let email: string;
-    if (loginType === 0) {
-      // 일반 유저
-      const result = await tokenModule.verifyAccessToken(token);
-      email = String(result.email);
-    } else if (loginType === 1) {
-      // 카카오 유저
-      const result = await tokenModule.verifyKakaoAccessToken(token);
-      email = String(result.email);
-    } else {
-      // 구글 유저
-      const result = await tokenModule.verifyKakaoAccessToken(token);
-      email = String(result.email);
-    }
-    return { email };
   },
 };
 

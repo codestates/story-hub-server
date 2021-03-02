@@ -1,8 +1,8 @@
 import connect from '../database';
-import { oauthUserInfo } from '../interface/Oauth';
+import { userInfo } from '../interface/user';
 
 const oauthModels = {
-  signWithLogin: async (arg: oauthUserInfo): Promise<void> => {
+  signWithLogin: async (arg: userInfo): Promise<void> => {
     try {
       const conn = await connect();
 
@@ -14,7 +14,7 @@ const oauthModels = {
       if (result[0].toString().length === 0) {
         const saveSql = `
         INSERT INTO users (email, user_name, nickname) VALUES (?, ?, ?)`;
-        await conn.query(saveSql, [arg.email, arg.id, arg.name]);
+        await conn.query(saveSql, [arg.email, arg.userName, arg.nickname]);
       }
     } catch (err) {
       console.log(err);

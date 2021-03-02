@@ -1,4 +1,4 @@
-export interface generalUserInfo {
+export interface userInfo {
   email?: string;
   password?: string;
   userName?: string;

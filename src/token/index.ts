@@ -1,25 +1,24 @@
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
-import { generalUserInfo } from '../interface/generalUser';
-import { oauthUserInfo } from '../interface/Oauth';
+import { userInfo } from '../interface/user';
 
 const ACCESS_SECRET: string = String(process.env.ACCESS_TOKEN_SECRET);
 
 const tokenModule = {
-  createAccessToken: (userData: generalUserInfo): string => {
-    console.log(ACCESS_SECRET, userData);
+  createAccessToken: (userData: userInfo): string => {
     const accessToken = jwt.sign(userData, ACCESS_SECRET, {
       expiresIn: '1 days',
     });
     return accessToken;
   },
 
-  verifyAccessToken: (accessToken: string): generalUserInfo => {
-    const userInfo = jwt.verify(accessToken, ACCESS_SECRET);
-    const result = JSON.parse(JSON.stringify(userInfo));
+  verifyAccessToken: (accessToken: string): userInfo => {
+    const verifyUserInfo = jwt.verify(accessToken, ACCESS_SECRET);
+    const result = JSON.parse(JSON.stringify(verifyUserInfo));
     return { email: result.email, userName: result.userName, nickname: result.nickname };
   },
-  verifyKakaoAccessToken: async (accessToken: any): Promise<oauthUserInfo> => {
+
+  verifyKakaoAccessToken: async (accessToken: any): Promise<userInfo> => {
     const info = await axios({
       url: 'https://kapi.kakao.com/v2/user/me',
       method: 'GET',
@@ -31,13 +30,14 @@ const tokenModule = {
     const { email, profile } = info.data.kakao_account;
     const name = profile.nickname;
     const { id } = info.data;
-    return { email, id, name };
+    return { email, userName: id, nickname: name };
   },
-  verifyGoogleAccessToken: async (accessToken: string): Promise<oauthUserInfo> => {
+
+  verifyGoogleAccessToken: async (accessToken: string): Promise<userInfo> => {
     const userinfo = await axios({
       url: `https://www.googleapis.com/userinfo/v2/me?access_token=${accessToken}`,
     });
-    return { email: userinfo.data.email, id: userinfo.data.id, name: userinfo.data.name };
+    return { email: userinfo.data.email, userName: userinfo.data.id, nickname: userinfo.data.name };
   },
 };
 

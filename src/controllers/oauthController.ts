@@ -7,8 +7,8 @@ const oauthModule = {
     try {
       const accessToken = req.body.access_token;
       const result = await tokenModule.verifyKakaoAccessToken(accessToken);
-      const { email, id, name } = result;
-      await oauthModels.signWithLogin({ email, id, name });
+      const { email, userName, nickname } = result;
+      await oauthModels.signWithLogin({ email, userName, nickname });
       return res.json({ accessToken, type: 1 });
     } catch (err) {
       return res.send(err);
@@ -18,10 +18,10 @@ const oauthModule = {
     try {
       const accessToken = req.body.access_token;
       const response = await tokenModule.verifyGoogleAccessToken(accessToken);
-      const { id, email, name } = response;
-      await oauthModels.signWithLogin({ id, email, name });
+      const { userName, email, nickname } = response;
+      await oauthModels.signWithLogin({ userName, email, nickname });
 
-      return res.json({ id, email, name });
+      return res.json({ userName, email, nickname });
     } catch (err) {
       return res.send('err');
     }
