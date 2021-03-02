@@ -17,8 +17,7 @@ const tokenModule = {
   verifyAccessToken: (accessToken: string): generalUserInfo => {
     const userInfo = jwt.verify(accessToken, ACCESS_SECRET);
     const result = JSON.parse(JSON.stringify(userInfo));
-
-    return { email: result.email };
+    return { email: result.email, userName: result.userName, nickname: result.nickname };
   },
   verifyKakaoAccessToken: async (accessToken: any): Promise<oauthUserInfo> => {
     const info = await axios({
@@ -34,9 +33,11 @@ const tokenModule = {
     const { id } = info.data;
     return { email, id, name };
   },
-  verifyGoogleAccessToken: (accessToken: string): generalUserInfo => {
-    console.log(accessToken);
-    return { email: 'resdf' };
+  verifyGoogleAccessToken: async (accessToken: string): Promise<oauthUserInfo> => {
+    const userinfo = await axios({
+      url: `https://www.googleapis.com/userinfo/v2/me?access_token=${accessToken}`,
+    });
+    return { email: userinfo.data.email, id: userinfo.data.id, name: userinfo.data.name };
   },
 };
 
