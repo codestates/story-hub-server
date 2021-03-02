@@ -13,8 +13,25 @@ const userModule = {
         32,
         String(process.env.CRYPTO_ALGORITH)
       );
+      console.log(hasPw.toString('hex'));
       const idCheck = await userModels.findUser({ email });
-      return res.send('test');
+      if (idCheck) {
+        res.status(409).send('존재하지 않는 유저입니다.');
+      }
+
+      const login = await userModels.loginUser({ email, password: hasPw.toString('hex') });
+      if (login.onCheck) {
+        return res.status(409).send('비밀번호가 틀렸거나, 탈퇴한 유저입니다.');
+      }
+      const { userName, nickname, accessToken } = login;
+      return res.json({
+        data: {
+          email,
+          userName,
+          nickname,
+          accessToken,
+        },
+      });
     } catch (err) {
       return err;
     }
