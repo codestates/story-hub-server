@@ -1,4 +1,4 @@
-export interface userInfo {
+export interface oauthUserInfo {
   id: string;
   email: string;
   name: string;

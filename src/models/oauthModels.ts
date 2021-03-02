@@ -1,8 +1,8 @@
 import connect from '../database';
-import { userInfo } from '../interface/Oauth';
+import { oauthUserInfo } from '../interface/Oauth';
 
 const oauthModels = {
-  signWithLogin: async (arg: userInfo): Promise<void> => {
+  signWithLogin: async (arg: oauthUserInfo): Promise<void> => {
     try {
       const conn = await connect();
 
