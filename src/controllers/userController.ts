@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import crypto from 'crypto';
 import userModels from '../models/userModels';
-import tokenModule from '../token';
+import verifyModule from '../token/verifyToken';
 
 const userModule = {
   login: async (req: Request, res: Response): Promise<Response> => {
@@ -15,7 +15,7 @@ const userModule = {
         String(process.env.CRYPTO_ALGORITH)
       );
       const idCheck = await userModels.findUser({ email });
-      if (idCheck) {
+      if (idCheck.onCheck) {
         res.status(409).send('존재하지 않는 유저입니다.');
       }
 
@@ -23,12 +23,9 @@ const userModule = {
       if (login.onCheck) {
         return res.status(409).send('비밀번호가 틀렸거나, 탈퇴한 유저입니다.');
       }
-      const { userName, nickname, accessToken } = login;
+      const { accessToken } = login;
       return res.json({
         data: {
-          email,
-          userName,
-          nickname,
           accessToken,
         },
       });
@@ -73,7 +70,12 @@ const userModule = {
 
   info: async (req: Request, res: Response): Promise<Response> => {
     try {
-      return res.send('test');
+      const token = String(req.headers.authorization?.split(' ')[1]);
+      const { loginType } = req.body;
+      const userInfo = await verifyModule.verifyUser(loginType, token);
+      return res.json({
+        userInfo,
+      });
     } catch (err) {
       return err;
     }
@@ -93,23 +95,6 @@ const userModule = {
     } catch (err) {
       return err;
     }
-  },
-  verifyUser: async (loginType: number, token: string) => {
-    let email;
-    if (loginType === 0) {
-      // 일반 유저
-      const result = await tokenModule.verifyAccessToken(token);
-      email = result.email;
-    } else if (loginType === 1) {
-      // 카카오 유저
-      const result = await tokenModule.verifyKakaoAccessToken(token);
-      email = result.email;
-    } else {
-      // 구글 유저
-      const result = await tokenModule.verifyKakaoAccessToken(token);
-      email = result.email;
-    }
-    return email;
   },
 };
 

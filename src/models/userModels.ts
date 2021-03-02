@@ -5,7 +5,7 @@ import tokenModule from '../token';
 const { createAccessToken } = tokenModule;
 
 const userModels = {
-  findUser: async (arg: generalUserInfo): Promise<boolean> => {
+  findUser: async (arg: generalUserInfo): Promise<generalUserInfo> => {
     try {
       const conn = await connect();
       const idCheckQuery = `
@@ -13,9 +13,10 @@ const userModels = {
       `;
       const idCheck = await conn.query(idCheckQuery, [arg.email]);
       if (idCheck[0].toString().length === 0) {
-        return true;
+        return { onCheck: true };
       }
-      return false;
+      console.log(idCheck[0]);
+      return { onCheck: false };
     } catch (err) {
       return err;
     }
@@ -38,7 +39,7 @@ const userModels = {
         onError: false,
       };
       const accessToken = createAccessToken(findUserInfo);
-      return { ...findUserInfo, accessToken };
+      return { accessToken };
     } catch (err) {
       return err;
     }
