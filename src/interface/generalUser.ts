@@ -2,8 +2,7 @@ export interface generalUserInfo {
   email?: string;
   password?: string;
   userName?: string;
-  phoneNumber?: string;
-  birthday?: Date;
+  nickName?: string;
   accessToken?: string;
   onCheck?: boolean;
   message?: string;
