@@ -1,8 +1,8 @@
 export interface AddBoard {
-  email: string;
+  email?: string;
   title: string;
   content: string;
-  optionName: string[];
+  optionName: string;
   genreName: string[];
   minLength: number;
   maxLength: number;

@@ -1,6 +1,9 @@
 import { Request, Response } from 'express';
 import crypto from 'crypto';
 import userModels from '../models/userModels';
+import tokenModule from '../token';
+import { generalUserInfo } from '../interface/generalUser';
+import { oauthUserInfo } from '../interface/Oauth';
 import verifyModule from '../token/verifyToken';
 
 const userModule = {
@@ -95,6 +98,26 @@ const userModule = {
     } catch (err) {
       return err;
     }
+  },
+  verifyUser: async (
+    loginType: number,
+    token: string
+  ): Promise<oauthUserInfo | generalUserInfo> => {
+    let email: string;
+    if (loginType === 0) {
+      // 일반 유저
+      const result = await tokenModule.verifyAccessToken(token);
+      email = String(result.email);
+    } else if (loginType === 1) {
+      // 카카오 유저
+      const result = await tokenModule.verifyKakaoAccessToken(token);
+      email = String(result.email);
+    } else {
+      // 구글 유저
+      const result = await tokenModule.verifyKakaoAccessToken(token);
+      email = String(result.email);
+    }
+    return { email };
   },
 };
 

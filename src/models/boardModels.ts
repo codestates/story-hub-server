@@ -1,13 +1,52 @@
 import connect from '../database';
 import { AddBoard } from '../interface/Board';
-// import {  } from '../interface/Board';
 
 const boardModels = {
-  createBoard: async (args: AddBoard): Promise<void> => {
+  createBoard: async (args: AddBoard): Promise<string> => {
     try {
-      console.log(args);
+      const conn = await connect();
+
+      // find index
+      const countBoard = `
+      select board_index from boards order by board_index desc limit 1;
+      `;
+      const totalCount = await conn.query(countBoard);
+
+      let nextIndex = JSON.parse(JSON.stringify(totalCount[0]));
+      const findIndex = nextIndex.length === 0 ? (nextIndex = 1) : nextIndex[0].board_index + 1;
+      console.log('findIndex', findIndex);
+
+      // insert board
+      const insertBoardSql = `
+      INSERT INTO boards (email, title, content) Values (?, ?, ?)
+      `;
+      await conn.query(insertBoardSql, [args.email, args.title, args.content]);
+
+      const insertCommitOptionSql = `
+        INSERT INTO commit_option(board_index, option_name, min_length, max_length, etc) VALUES (?, ?, ?, ?, ?);
+      `;
+      await conn.query(insertCommitOptionSql, [
+        findIndex,
+        args.optionName,
+        args.minLength,
+        args.maxLength,
+        args.etc || null,
+      ]);
+      const insertLoop = async () => {
+        const genreSql = `
+          INSERT INTO board_genre (board_index, genre_code) VALUES (?, ?);
+        `;
+        Promise.all(
+          args.genreName.map(async (genre) => {
+            console.log(genre);
+            await conn.query(genreSql, [findIndex, genre]);
+          })
+        );
+      };
+      insertLoop();
+      return 'OK';
     } catch (err) {
-      console.log('hi');
+      return err;
     }
   },
 };
