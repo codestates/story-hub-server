@@ -52,13 +52,13 @@ const boardModels = {
     const conn = await connect();
 
     const hotStorySql = `
-    select b.*, u.nickname from boards as b inner join users as u on u.email = b.email ORDER BY b.up_count DESC;
+    select b.*, u.email from boards as b inner join users as u on u.email = b.email ORDER BY b.up_count DESC;
     `;
     const hotStoryList = await conn.query(hotStorySql);
     const convertHotStory = JSON.parse(JSON.stringify(hotStoryList));
 
     const newStorySql = `
-    select b.*, u.nickname from boards as b inner join users as u on u.email = b.email ORDER BY b.created_at DESC;
+    select b.*, u.email from boards as b inner join users as u on u.email = b.email ORDER BY b.created_at DESC;
     `;
     const newStoryList = await conn.query(newStorySql);
     const convertNewStory = JSON.parse(JSON.stringify(newStoryList));
