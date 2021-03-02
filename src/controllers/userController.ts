@@ -13,7 +13,6 @@ const userModule = {
         32,
         String(process.env.CRYPTO_ALGORITH)
       );
-      console.log(hasPw.toString('hex'));
       const idCheck = await userModels.findUser({ email });
       if (idCheck) {
         res.status(409).send('존재하지 않는 유저입니다.');
@@ -38,8 +37,26 @@ const userModule = {
   },
 
   signup: async (req: Request, res: Response): Promise<Response> => {
+    const { email, password, userName, nickname } = req.body;
+    const hasPw = await crypto.pbkdf2Sync(
+      password,
+      String(process.env.CRYPTO_SALT),
+      Number(process.env.CRYPTO_ITERATOR),
+      32,
+      String(process.env.CRYPTO_ALGORITH)
+    );
     try {
-      return res.send('test');
+      const idCheck = await userModels.findUser({ email });
+      if (idCheck) {
+        await userModels.createUser({
+          email,
+          password: hasPw.toString('hex'),
+          userName,
+          nickname,
+        });
+        return res.status(201).send('회원가입 성공');
+      }
+      return res.status(409).send('회원가입 실패');
     } catch (err) {
       return err;
     }

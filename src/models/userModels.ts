@@ -43,6 +43,13 @@ const userModels = {
       return err;
     }
   },
+  createUser: async (arg: generalUserInfo): Promise<void> => {
+    const conn = await connect();
+    const signupQuery = `
+      INSERT INTO USERS(email, password, user_name, nickname) values (?, ?, ?, ?);
+    `;
+    await conn.query(signupQuery, [arg.email, arg.password, arg.userName, arg.nickname]);
+  },
 };
 
 export default userModels;
