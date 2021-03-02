@@ -12,7 +12,7 @@ boardRouter
   .post('/create', boardModule.create)
   .post('/find_title')
   .put('/')
-  .put('/like')
+  .put('/like', boardModule.like)
   .put('/dislike')
   .delete('/');
 

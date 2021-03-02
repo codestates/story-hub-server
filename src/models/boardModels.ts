@@ -1,5 +1,5 @@
 import connect from '../database';
-import { AddBoard, BoardList } from '../interface/Board';
+import { AddBoard, BoardList, LikeType } from '../interface/Board';
 
 const boardModels = {
   createBoard: async (args: AddBoard): Promise<string> => {
@@ -63,6 +63,25 @@ const boardModels = {
     const newStoryList = await conn.query(newStorySql);
     const convertNewStory = JSON.parse(JSON.stringify(newStoryList));
     return { hotStory: convertHotStory, newStory: convertNewStory };
+  },
+  like: async (args: LikeType): Promise<string> => {
+    try {
+      const conn = await connect();
+
+      // 해당 게시글 up_count + 1
+      const upCount = `
+      UPDATE boards SET up_count = up_count + 1 WHERE board_index = ?;
+      `;
+      await conn.query(upCount, [args.boardIndex]);
+      // board_up_down 테이블 email, board_index, check_up_down 1로 변경
+      const likeUser = `
+      INSERT INTO board_up_down (email, board_index, check_up_down) VALUES (?, ?, ?);
+      `;
+      await conn.query(likeUser, [args.email, args.boardIndex, true]);
+      return 'OK';
+    } catch (err) {
+      return err;
+    }
   },
 };
 

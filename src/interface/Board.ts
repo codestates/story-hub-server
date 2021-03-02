@@ -13,3 +13,8 @@ export interface BoardList {
   hotStory: string[];
   newStory: string[];
 }
+
+export interface LikeType {
+  email: string;
+  boardIndex: number;
+}

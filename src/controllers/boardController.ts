@@ -34,6 +34,23 @@ const boardModule = {
       return err;
     }
   },
-};
+  like: async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const { loginType } = req.body;
+      const { authorization } = req.headers;
+      const token = String(authorization?.split(' ')[1]);
+      const getEmail = await verifyUser(loginType, token);
 
+      req.body.email = getEmail.email;
+
+      const result = await boardModels.like(req.body);
+      if (result === 'OK') {
+        return res.send({ message: 'OK' });
+      }
+      return res.send({ message: 'Fail' });
+    } catch (err) {
+      return err;
+    }
+  },
+};
 export default boardModule;
