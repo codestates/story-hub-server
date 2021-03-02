@@ -6,7 +6,7 @@ const { boardModule } = controllerModule;
 const boardRouter = express.Router();
 
 boardRouter
-  .get('/list')
+  .get('/list', boardModule.list)
   .get('/info')
   .get('/favoriteinfo')
   .post('/create', boardModule.create)

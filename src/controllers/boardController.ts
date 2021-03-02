@@ -25,6 +25,15 @@ const boardModule = {
       return err;
     }
   },
+  list: async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const boardList = await boardModels.list();
+      const { hotStory, newStory } = boardList;
+      return res.send({ hotStory: hotStory[0], newStory: newStory[0] });
+    } catch (err) {
+      return err;
+    }
+  },
 };
 
 export default boardModule;

@@ -8,3 +8,8 @@ export interface AddBoard {
   maxLength: number;
   etc?: string;
 }
+
+export interface BoardList {
+  hotStory: string[];
+  newStory: string[];
+}
