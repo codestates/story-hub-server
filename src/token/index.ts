@@ -18,6 +18,14 @@ const tokenModule = {
 
     return { email: result.email };
   },
+  verifyKakaoAccessToken: (accessToken: string): generalUserInfo => {
+    console.log(accessToken);
+    return { email: 'resdf' };
+  },
+  verifyGoogleAccessToken: (accessToken: string): generalUserInfo => {
+    console.log(accessToken);
+    return { email: 'resdf' };
+  },
 };
 
 export default tokenModule;
