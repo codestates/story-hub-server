@@ -12,6 +12,7 @@ userRouter
   .post('/logout', userModule.logout)
   .get('/info', userModule.info)
   .put('/', userModule.modify)
+  .put('/withdraw', userModule.withdraw)
   .delete('/', userModule.delete);
 
 export default userRouter;
