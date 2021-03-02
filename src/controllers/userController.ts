@@ -4,6 +4,7 @@ import userModels from '../models/userModels';
 import tokenModule from '../token';
 import { generalUserInfo } from '../interface/generalUser';
 import { oauthUserInfo } from '../interface/Oauth';
+import verifyModule from '../token/verifyToken';
 
 const userModule = {
   login: async (req: Request, res: Response): Promise<Response> => {
@@ -17,7 +18,7 @@ const userModule = {
         String(process.env.CRYPTO_ALGORITH)
       );
       const idCheck = await userModels.findUser({ email });
-      if (idCheck) {
+      if (idCheck.onCheck) {
         res.status(409).send('존재하지 않는 유저입니다.');
       }
 
@@ -25,12 +26,9 @@ const userModule = {
       if (login.onCheck) {
         return res.status(409).send('비밀번호가 틀렸거나, 탈퇴한 유저입니다.');
       }
-      const { userName, nickname, accessToken } = login;
+      const { accessToken } = login;
       return res.json({
         data: {
-          email,
-          userName,
-          nickname,
           accessToken,
         },
       });
@@ -75,7 +73,12 @@ const userModule = {
 
   info: async (req: Request, res: Response): Promise<Response> => {
     try {
-      return res.send('test');
+      const token = String(req.headers.authorization?.split(' ')[1]);
+      const { loginType } = req.body;
+      const userInfo = await verifyModule.verifyUser(loginType, token);
+      return res.json({
+        userInfo,
+      });
     } catch (err) {
       return err;
     }

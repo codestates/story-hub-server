@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import boardModels from '../models/boardModels';
-import userModule from './userController';
+import verifyModule from '../token/verifyToken';
 
-const { verifyUser } = userModule;
+const { verifyUser } = verifyModule;
 
 const boardModule = {
   create: async (req: Request, res: Response): Promise<Response> => {
@@ -12,6 +12,9 @@ const boardModule = {
       const token = String(authorization?.split(' ')[1]);
       const getEmail = await verifyUser(loginType, token);
       req.body.email = getEmail.email;
+
+      boardModels.createBoard(req.body);
+      // email을 clinet에서 받은 정보들과 함께 model로 보내준다.
 
       const result = await boardModels.createBoard(req.body);
       if (result === 'OK') {
