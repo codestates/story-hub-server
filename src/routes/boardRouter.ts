@@ -10,7 +10,7 @@ boardRouter
   .get('/info')
   .get('/favoriteinfo')
   .post('/create', boardModule.create)
-  .post('/find_title')
+  .post('/find_title', boardModule.findTitle)
   .put('/')
   .put('/like', boardModule.like)
   .put('/dislike', boardModule.disLike)

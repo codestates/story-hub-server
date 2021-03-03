@@ -19,7 +19,7 @@ const boardModule = {
       }
       return res.send({ message: 'Fail' });
     } catch (err) {
-      return err;
+      return res.send(err);
     }
   },
   list: async (req: Request, res: Response): Promise<Response> => {
@@ -28,7 +28,7 @@ const boardModule = {
       const { hotStory, newStory } = boardList;
       return res.send({ hotStory: hotStory[0], newStory: newStory[0] });
     } catch (err) {
-      return err;
+      return res.send(err);
     }
   },
   like: async (req: Request, res: Response): Promise<Response> => {
@@ -46,7 +46,7 @@ const boardModule = {
       }
       return res.send({ message: 'Fail' });
     } catch (err) {
-      return err;
+      return res.send(err);
     }
   },
   disLike: async (req: Request, res: Response): Promise<Response> => {
@@ -65,7 +65,17 @@ const boardModule = {
       }
       return res.send({ message: 'Fail' });
     } catch (err) {
-      return err;
+      return res.send(err);
+    }
+  },
+  findTitle: async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const { title } = req.body;
+
+      const list = await boardModels.findTitle(title);
+      return res.send({ list });
+    } catch (err) {
+      return res.send(err);
     }
   },
 };
