@@ -13,7 +13,7 @@ boardRouter
   .post('/find_title')
   .put('/')
   .put('/like', boardModule.like)
-  .put('/dislike')
+  .put('/dislike', boardModule.disLike)
   .delete('/');
 
 export default boardRouter;
