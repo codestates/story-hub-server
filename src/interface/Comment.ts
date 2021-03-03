@@ -5,11 +5,16 @@ export interface createComment {
   content: string;
 }
 
+export interface commentList {
+  list: (string | number)[];
+}
+
 export interface getCommentList {
   boardIndex?: number | undefined;
   commitIndex?: number | undefined;
 }
 
-export interface commentList {
-  list: (string | number)[];
+export interface likeOrDislike {
+  email: string;
+  commentIndex: number;
 }
