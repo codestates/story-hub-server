@@ -16,8 +16,13 @@ const oauthModule = {
   },
   google: async (req: Request, res: Response): Promise<Response> => {
     try {
-      const accessToken = req.body.access_token;
-      const response = await tokenModule.verifyGoogleAccessToken(accessToken);
+      const { authorization } = req.headers;
+      // eslint-disable-next-line no-unused-vars
+      const token = String(authorization?.split(' ')[1]);
+      const { logoutToken } = req.body;
+      console.log(logoutToken);
+      const response = await tokenModule.verifyGoogleAccessToken(logoutToken);
+      console.log('@@@', response);
       const { userName, email, nickname } = response;
       await oauthModels.signWithLogin({ userName, email, nickname });
 
