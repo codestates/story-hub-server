@@ -27,3 +27,10 @@ export interface deleteBoard {
   email: string;
   boardIndex: number;
 }
+
+export interface updateBoard {
+  email: string;
+  boardIndex: number;
+  title: string;
+  content: string;
+}

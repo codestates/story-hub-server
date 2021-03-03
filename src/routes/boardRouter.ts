@@ -11,7 +11,7 @@ boardRouter
   .get('/favoriteinfo')
   .post('/create', boardModule.create)
   .post('/find_title', boardModule.findTitle)
-  .put('/')
+  .put('/', boardModule.update)
   .put('/like', boardModule.like)
   .put('/dislike', boardModule.disLike)
   .delete('/', boardModule.delete);
