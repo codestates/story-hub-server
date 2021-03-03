@@ -1,5 +1,5 @@
 import connect from '../database';
-import { commentList, createComment, getCommentList } from '../interface/Comment';
+import { commentList, createComment, getCommentList, likeOrDislike } from '../interface/Comment';
 
 const commentModels = {
   createComment: async (arg: createComment): Promise<void> => {
@@ -44,6 +44,69 @@ const commentModels = {
       return { list: result };
     } catch (err) {
       return err;
+    }
+  },
+  likeComment: async (arg: likeOrDislike): Promise<boolean> => {
+    console.log(arg.commentIndex);
+    try {
+      const conn = await connect();
+      //! TODO : 1. 내가 좋아요한 게시물 전체를 가져오기
+      const baseCheck = `
+        SELECT comment_index from comments_up_down where email = ?; 
+      `;
+      const baseReq = await conn.query(baseCheck, [arg.email]);
+      const baseRes = JSON.parse(JSON.stringify(baseReq[0]));
+      const like: number[] = [];
+      baseRes.map((list: any) => like.push(list.comment_index));
+      if (!like.includes(arg.commentIndex)) {
+        console.log('걸린다');
+        //! TODO : 좋아요한 목록중에 입력받은 목록이 없다면 새롭게 추가해주고 up_count 늘려주기
+        const newLike = `
+          INSERT INTO comments_up_down (email, check_up_down, comment_index) values (?, 1, ?);
+        `;
+        await conn.query(newLike, [arg.email, arg.commentIndex]);
+        const countUp = `
+          UPDATE comments SET up_count = up_count + 1 where comment_index = ? 
+        `;
+        await conn.query(countUp, arg.commentIndex);
+        return false;
+      }
+      console.log('안걸린다');
+      // TODO : 사용자가 이미 좋아요를 했거나 싫어요를 한 상태이다.
+
+      const checkQuery = `
+        SELECT check_up_down from comments_up_down where comment_index = ? AND email = ?;
+      `;
+      const checkReq = await conn.query(checkQuery, [arg.commentIndex, arg.email]);
+      const checkRes = JSON.parse(JSON.stringify(checkReq[0]));
+      if (checkRes[0].check_up_down) {
+        // ! 좋아요를 누른 상태
+        // TODO : 좋아요가 눌린 상태라면 comment에 upcount를 하나 삭제해주고 내가 좋아한 목록에서 지워준다.
+        const countDown = `
+        UPDATE comments SET up_count = up_count - 1 where comment_index = ? 
+        `;
+        await conn.query(countDown, arg.commentIndex);
+        const deletelist = `
+          DELETE from comments_up_down where comment_index = ?
+        `;
+        await conn.query(deletelist, arg.commentIndex);
+        return true;
+      }
+      console.log('이미 싫어요를 눌렀어요');
+      // 싫어요가 눌린 상태라면 comment에 downcount하나를 줄이고 upcount를 늘려주고 up_down목록상태에서
+      const countUpdate = `
+        UPDATE comments SET up_count = up_count + 1, down_count = down_count -1 where comment_index = ?;
+      `;
+      await conn.query(countUpdate, arg.commentIndex);
+      // 싫어요 상태를 좋아요로 바꿔준다 (0) => (1)
+      const toLike = `
+        UPDATE comments_up_down SET check_up_down = 1 where comment_index = ?
+      `;
+      await conn.query(toLike, arg.commentIndex);
+      return true;
+    } catch (err) {
+      console.log(err);
+      return true;
     }
   },
 };

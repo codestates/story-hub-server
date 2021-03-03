@@ -10,7 +10,7 @@ const commentModule = {
     try {
       const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
       if (email === undefined) {
-        return res.send('존재하지 않는 사용자입니다.');
+        return res.send('검증되지 않은 유저입니다.');
       }
       await commentModels.createComment({ email, boardIndex, commitIndex, content });
       return res.send('OK');
@@ -58,7 +58,15 @@ const commentModule = {
   },
 
   like: async (req: Request, res: Response): Promise<Response> => {
+    const { authorization } = req.headers;
+    const { loginType, commentIndex } = req.body;
     try {
+      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
+      if (email === undefined) {
+        return res.send('검증되지 않은 유저입니다.');
+      }
+      // eslint-disable-next-line no-unused-vars
+      const response = await commentModels.likeComment({ email, commentIndex });
       return res.send('test');
     } catch (err) {
       return err;
