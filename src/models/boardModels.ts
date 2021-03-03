@@ -14,7 +14,6 @@ const boardModels = {
     try {
       const conn = await connect();
 
-      // find index
       const countBoard = `
       select board_index from boards order by board_index desc limit 1;
       `;
@@ -26,9 +25,9 @@ const boardModels = {
 
       // insert board
       const insertBoardSql = `
-      INSERT INTO boards (email, title, content) Values (?, ?, ?)
+      INSERT INTO boards (email, title, content, description) Values (?, ?, ?, ?)
       `;
-      await conn.query(insertBoardSql, [args.email, args.title, args.content]);
+      await conn.query(insertBoardSql, [args.email, args.title, args.content, args.discription]);
 
       const insertCommitOptionSql = `
         INSERT INTO commit_option(board_index, option_name, min_length, max_length, etc) VALUES (?, ?, ?, ?, ?);
@@ -48,7 +47,6 @@ const boardModels = {
         `;
         Promise.all(
           args.genreName.map(async (genre) => {
-            console.log(genre);
             await conn.query(genreSql, [findIndex, genre]);
           })
         );
@@ -56,7 +54,6 @@ const boardModels = {
       insertLoop();
       return 'OK';
     } catch (err) {
-      console.log(err);
       return err;
     }
   },
@@ -104,7 +101,6 @@ const boardModels = {
 
         await conn.query(insertSql, [args.email, args.boardIndex, true]);
       } else if (checkLikeStr[0].check_up_down === 0) {
-        // 좋아요를 누르려고 하는데 싫어요가 눌려져있는 상황
         const upLike = `
           UPDATE boards SET down_count = down_count - 1 WHERE email = ? AND board_index = ?;
         `;
@@ -115,7 +111,6 @@ const boardModels = {
 
         await conn.query(upCount, [args.email, args.boardIndex]);
       } else if (checkLikeStr[0].check_up_down === 1) {
-        // 좋아요를 누르려고 했는데 싫어요가 눌러져 있는 상황
         const downSql = `
           UPDATE boards SET up_count = up_count - 1 WHERE email = ? AND board_index = ?;
         `;
@@ -173,7 +168,6 @@ const boardModels = {
 
         await conn.query(removeBoardUpDown, [args.email]);
       } else if (checkLikeStr[0].check_up_down === 1) {
-        // 좋아요가 눌려있는 경우 -> 좋아요를 눌렀지만 취소하고 싫어요를 누를래요
         const downLike = `
           UPDATE boards SET up_count = up_count - 1 WHERE email = ? AND board_index = ?;
         `;
@@ -187,7 +181,6 @@ const boardModels = {
 
       return 'OK';
     } catch (err) {
-      console.log(err);
       return err;
     }
   },
@@ -214,12 +207,10 @@ const boardModels = {
       await conn.query(removeSql, [args.email, args.boardIndex]);
       return 'OK';
     } catch (err) {
-      console.log(err);
       return err;
     }
   },
   boardUpdate: async (args: UpdateBoard): Promise<string> => {
-    // console.log(args);
     const conn = await connect();
 
     const findBoardMergeSql = `
@@ -256,7 +247,7 @@ const boardModels = {
     `;
     const favoriteList = await conn.query(favoriteListSql, [args.email]);
     const favoriteListArr = JSON.parse(JSON.stringify(favoriteList[0]));
-    console.log(favoriteListArr);
+
     return favoriteListArr;
   },
 };
