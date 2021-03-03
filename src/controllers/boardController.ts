@@ -24,7 +24,7 @@ const boardModule = {
   },
   list: async (req: Request, res: Response): Promise<Response> => {
     try {
-      const boardList = await boardModels.list();
+      const boardList = await boardModels.hotAndNewList();
       const { hotStory, newStory } = boardList;
       return res.send({ hotStory: hotStory[0], newStory: newStory[0] });
     } catch (err) {
@@ -40,7 +40,7 @@ const boardModule = {
 
       req.body.email = getEmail.email;
 
-      const result = await boardModels.like(req.body);
+      const result = await boardModels.boardLike(req.body);
       if (result === 'OK') {
         return res.send({ message: 'OK' });
       }
@@ -59,7 +59,7 @@ const boardModule = {
 
       req.body.email = getEmail.email;
 
-      const result = await boardModels.disLike(req.body);
+      const result = await boardModels.boardDisLike(req.body);
       if (result === 'OK') {
         res.send({ message: 'OK' });
       }
@@ -72,7 +72,7 @@ const boardModule = {
     try {
       const { title } = req.body;
 
-      const list = await boardModels.findTitle(title);
+      const list = await boardModels.searchTitle(title);
       return res.send({ list });
     } catch (err) {
       return res.send(err);
@@ -87,7 +87,7 @@ const boardModule = {
       const getMail = await verifyUser(loginType, token);
       req.body.email = getMail.email;
 
-      const result = await boardModels.delete(req.body);
+      const result = await boardModels.boardDelete(req.body);
 
       if (result === 'OK') {
         return res.send('hi');
@@ -107,12 +107,24 @@ const boardModule = {
       const getEmail = await verifyUser(loginType, token);
       req.body.email = getEmail.email;
 
-      const result = await boardModels.update(req.body);
+      const result = await boardModels.boardUpdate(req.body);
 
       return result === 'OK' ? res.send({ message: 'OK' }) : res.send({ message: 'Fail' });
     } catch (err) {
       return res.send(err);
     }
+  },
+  info: async (req: Request, res: Response): Promise<Response> => {
+    const { loginType } = req.body;
+    const { authorization } = req.headers;
+    const token = String(authorization?.split(' ')[1]);
+
+    const getEmail = await verifyUser(loginType, token);
+    req.body.email = getEmail.email;
+
+    const boardInfo = await boardModels.myPageInfo(req.body);
+
+    return res.send({ boardInfo });
   },
 };
 export default boardModule;
