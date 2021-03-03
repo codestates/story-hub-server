@@ -98,5 +98,21 @@ const boardModule = {
       return res.send(err);
     }
   },
+  update: async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const { loginType } = req.body;
+      const { authorization } = req.headers;
+      const token = String(authorization?.split(' ')[1]);
+
+      const getEmail = await verifyUser(loginType, token);
+      req.body.email = getEmail.email;
+
+      const result = await boardModels.update(req.body);
+
+      return result === 'OK' ? res.send({ message: 'OK' }) : res.send({ message: 'Fail' });
+    } catch (err) {
+      return res.send(err);
+    }
+  },
 };
 export default boardModule;

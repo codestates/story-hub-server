@@ -1,5 +1,12 @@
 import connect from '../database';
-import { AddBoard, BoardList, deleteBoard, LikeType, SearchTitle } from '../interface/Board';
+import {
+  AddBoard,
+  BoardList,
+  deleteBoard,
+  LikeType,
+  SearchTitle,
+  updateBoard,
+} from '../interface/Board';
 
 const boardModels = {
   createBoard: async (args: AddBoard): Promise<string> => {
@@ -209,6 +216,25 @@ const boardModels = {
       console.log(err);
       return err;
     }
+  },
+  update: async (args: updateBoard): Promise<string> => {
+    // console.log(args);
+    const conn = await connect();
+
+    const findBoardMergeSql = `
+      SELECT * FROM board_commits WHERE board_index = ?
+    `;
+    const findMerge = await conn.query(findBoardMergeSql, [args.boardIndex]);
+    const findMergeArr = JSON.parse(JSON.stringify(findMerge[0]));
+
+    if (findMergeArr.length === 0) {
+      const updateSql = `
+        UPDATE boards SET title = ?, content = ? WHERE board_index = ?
+      `;
+      await conn.query(updateSql, [args.title, args.content, args.boardIndex]);
+      return 'OK';
+    }
+    return 'Fail';
   },
 };
 
