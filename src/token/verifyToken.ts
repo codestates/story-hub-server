@@ -1,4 +1,4 @@
-import { userInfo } from '../interface/user';
+import { userInfo } from '../interface/User';
 import tokenModule from './index';
 
 const verifyModule = {
