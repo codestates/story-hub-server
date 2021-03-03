@@ -115,16 +115,36 @@ const boardModule = {
     }
   },
   info: async (req: Request, res: Response): Promise<Response> => {
-    const { loginType } = req.body;
-    const { authorization } = req.headers;
-    const token = String(authorization?.split(' ')[1]);
+    try {
+      const { loginType } = req.body;
+      const { authorization } = req.headers;
+      const token = String(authorization?.split(' ')[1]);
 
-    const getEmail = await verifyUser(loginType, token);
-    req.body.email = getEmail.email;
+      const getEmail = await verifyUser(loginType, token);
+      req.body.email = getEmail.email;
 
-    const boardInfo = await boardModels.myPageInfo(req.body);
+      const boardInfo = await boardModels.myPageInfo(req.body);
 
-    return res.send({ boardInfo });
+      return res.send({ boardInfo });
+    } catch (err) {
+      return res.send(err);
+    }
+  },
+  favorite: async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const { loginType } = req.body;
+      const { authorization } = req.headers;
+      const token = String(authorization?.split(' ')[1]);
+
+      const getEmail = await verifyUser(loginType, token);
+      req.body.email = getEmail.email;
+
+      const favoriteInfo = await boardModels.myFavoriteList(req.body);
+
+      return res.send({ favoriteInfo });
+    } catch (err) {
+      return res.send(err);
+    }
   },
 };
 export default boardModule;

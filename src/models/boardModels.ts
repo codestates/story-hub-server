@@ -2,11 +2,11 @@ import connect from '../database';
 import {
   AddBoard,
   BoardList,
-  deleteBoard,
+  DeleteBoard,
   LikeType,
-  myPageInfo,
+  EmailInfo,
   SearchTitle,
-  updateBoard,
+  UpdateBoard,
 } from '../interface/Board';
 
 const boardModels = {
@@ -203,7 +203,7 @@ const boardModels = {
 
     return list;
   },
-  boardDelete: async (args: deleteBoard): Promise<string> => {
+  boardDelete: async (args: DeleteBoard): Promise<string> => {
     try {
       const conn = await connect();
 
@@ -218,7 +218,7 @@ const boardModels = {
       return err;
     }
   },
-  boardUpdate: async (args: updateBoard): Promise<string> => {
+  boardUpdate: async (args: UpdateBoard): Promise<string> => {
     // console.log(args);
     const conn = await connect();
 
@@ -237,16 +237,27 @@ const boardModels = {
     }
     return 'Fail';
   },
-  myPageInfo: async (args: myPageInfo): Promise<string[]> => {
+  myPageInfo: async (args: EmailInfo): Promise<string[]> => {
     const conn = await connect();
 
     const myBoardInfoSql = `
       SELECT * FROM boards WHERE email = ? ORDER BY created_at DESC;
     `;
     const myBoardInfo = await conn.query(myBoardInfoSql, [args.email]);
-    const myBoardInfoStr = JSON.parse(JSON.stringify(myBoardInfo[0]));
+    const myBoardInfoArr = JSON.parse(JSON.stringify(myBoardInfo[0]));
 
-    return myBoardInfoStr;
+    return myBoardInfoArr;
+  },
+  myFavoriteList: async (args: EmailInfo): Promise<string[]> => {
+    const conn = await connect();
+
+    const favoriteListSql = `
+      SELECT * FROM user_board_favorite WHERE email = ? ORDER BY created_at DESC;
+    `;
+    const favoriteList = await conn.query(favoriteListSql, [args.email]);
+    const favoriteListArr = JSON.parse(JSON.stringify(favoriteList[0]));
+    console.log(favoriteListArr);
+    return favoriteListArr;
   },
 };
 
