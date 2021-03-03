@@ -5,14 +5,14 @@ import { getUserInfo } from './common/function';
 const commentModule = {
   create: async (req: Request, res: Response): Promise<Response> => {
     const { authorization } = req.headers;
-    const { loginType, boardIndex, commitIndex, title, content } = req.body;
+    const { loginType, boardIndex, commitIndex, content } = req.body;
 
     try {
       const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
       if (email === undefined) {
         return res.send('존재하지 않는 사용자입니다.');
       }
-      await commentModels.createComment({ email, boardIndex, commitIndex, title, content });
+      await commentModels.createComment({ email, boardIndex, commitIndex, content });
       return res.send('OK');
     } catch (err) {
       return err;
@@ -21,7 +21,13 @@ const commentModule = {
 
   list: async (req: Request, res: Response): Promise<Response> => {
     try {
-      return res.send('test');
+      // TODO : 한가지 게시물에 대한 댓글 리스트를 보여준다.
+      const { boardIndex } = req.body;
+      const commentList = await commentModels.getCommentList(boardIndex);
+
+      return res.json({
+        commentList,
+      });
     } catch (err) {
       return err;
     }
