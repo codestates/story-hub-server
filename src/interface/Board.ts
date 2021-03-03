@@ -22,3 +22,8 @@ export interface LikeType {
 export interface SearchTitle {
   title: string;
 }
+
+export interface deleteBoard {
+  email: string;
+  boardIndex: number;
+}

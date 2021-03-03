@@ -1,6 +1,5 @@
-import { listenerCount } from 'mysql2/typings/mysql/lib/Pool';
 import connect from '../database';
-import { AddBoard, BoardList, LikeType, SearchTitle } from '../interface/Board';
+import { AddBoard, BoardList, deleteBoard, LikeType, SearchTitle } from '../interface/Board';
 
 const boardModels = {
   createBoard: async (args: AddBoard): Promise<string> => {
@@ -195,6 +194,21 @@ const boardModels = {
     const list = JSON.parse(JSON.stringify(findList[0]));
 
     return list;
+  },
+  delete: async (args: deleteBoard): Promise<string> => {
+    try {
+      const conn = await connect();
+
+      const removeSql = `
+      DELETE FROM boards WHERE email = ? and board_index = ?
+      `;
+
+      await conn.query(removeSql, [args.email, args.boardIndex]);
+      return 'OK';
+    } catch (err) {
+      console.log(err);
+      return err;
+    }
   },
 };
 

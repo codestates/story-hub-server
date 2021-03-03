@@ -78,5 +78,25 @@ const boardModule = {
       return res.send(err);
     }
   },
+  delete: async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const { loginType } = req.body;
+      const { authorization } = req.headers;
+      const token = String(authorization?.split(' ')[1]);
+
+      const getMail = await verifyUser(loginType, token);
+      req.body.email = getMail.email;
+
+      const result = await boardModels.delete(req.body);
+
+      if (result === 'OK') {
+        return res.send('hi');
+      }
+
+      return res.send({ message: 'Fail' });
+    } catch (err) {
+      return res.send(err);
+    }
+  },
 };
 export default boardModule;

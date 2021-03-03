@@ -14,6 +14,6 @@ boardRouter
   .put('/')
   .put('/like', boardModule.like)
   .put('/dislike', boardModule.disLike)
-  .delete('/');
+  .delete('/', boardModule.delete);
 
 export default boardRouter;
