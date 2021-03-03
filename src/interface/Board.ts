@@ -23,18 +23,18 @@ export interface SearchTitle {
   title: string;
 }
 
-export interface deleteBoard {
+export interface DeleteBoard {
   email: string;
   boardIndex: number;
 }
 
-export interface updateBoard {
+export interface UpdateBoard {
   email: string;
   boardIndex: number;
   title: string;
   content: string;
 }
 
-export interface myPageInfo {
+export interface EmailInfo {
   email: string;
 }
