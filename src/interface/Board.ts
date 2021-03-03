@@ -34,3 +34,7 @@ export interface updateBoard {
   title: string;
   content: string;
 }
+
+export interface myPageInfo {
+  email: string;
+}

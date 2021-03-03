@@ -4,6 +4,7 @@ import {
   BoardList,
   deleteBoard,
   LikeType,
+  myPageInfo,
   SearchTitle,
   updateBoard,
 } from '../interface/Board';
@@ -59,7 +60,7 @@ const boardModels = {
       return err;
     }
   },
-  list: async (): Promise<BoardList> => {
+  hotAndNewList: async (): Promise<BoardList> => {
     const conn = await connect();
 
     const hotStorySql = `
@@ -75,7 +76,7 @@ const boardModels = {
     const convertNewStory = JSON.parse(JSON.stringify(newStoryList));
     return { hotStory: convertHotStory, newStory: convertNewStory };
   },
-  like: async (args: LikeType): Promise<string> => {
+  boardLike: async (args: LikeType): Promise<string> => {
     try {
       const conn = await connect();
 
@@ -132,7 +133,7 @@ const boardModels = {
       return err;
     }
   },
-  disLike: async (args: LikeType): Promise<string> => {
+  boardDisLike: async (args: LikeType): Promise<string> => {
     try {
       const conn = await connect();
 
@@ -190,7 +191,7 @@ const boardModels = {
       return err;
     }
   },
-  findTitle: async (args: SearchTitle): Promise<string[]> => {
+  searchTitle: async (args: SearchTitle): Promise<string[]> => {
     const conn = await connect();
 
     const findTitleSql = `
@@ -202,7 +203,7 @@ const boardModels = {
 
     return list;
   },
-  delete: async (args: deleteBoard): Promise<string> => {
+  boardDelete: async (args: deleteBoard): Promise<string> => {
     try {
       const conn = await connect();
 
@@ -217,7 +218,7 @@ const boardModels = {
       return err;
     }
   },
-  update: async (args: updateBoard): Promise<string> => {
+  boardUpdate: async (args: updateBoard): Promise<string> => {
     // console.log(args);
     const conn = await connect();
 
@@ -235,6 +236,17 @@ const boardModels = {
       return 'OK';
     }
     return 'Fail';
+  },
+  myPageInfo: async (args: myPageInfo): Promise<string[]> => {
+    const conn = await connect();
+
+    const myBoardInfoSql = `
+      SELECT * FROM boards WHERE email = ? ORDER BY created_at DESC;
+    `;
+    const myBoardInfo = await conn.query(myBoardInfoSql, [args.email]);
+    const myBoardInfoStr = JSON.parse(JSON.stringify(myBoardInfo[0]));
+
+    return myBoardInfoStr;
   },
 };
 
