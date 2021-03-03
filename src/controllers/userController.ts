@@ -60,9 +60,11 @@ const userModule = {
     }
   },
 
+  // TODO: react-google-login 안에 login, logout 둘다 존재함
   logout: async (req: Request, res: Response): Promise<Response> => {
     try {
-      return res.send('test');
+      res.clearCookie('accessToken');
+      return res.send('로그아웃');
     } catch (err) {
       return err;
     }
@@ -82,7 +84,7 @@ const userModule = {
         },
       });
     } catch (err) {
-      return err;
+      return res.send(err);
     }
   },
 
