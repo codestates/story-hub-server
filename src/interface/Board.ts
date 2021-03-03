@@ -18,3 +18,7 @@ export interface LikeType {
   email: string;
   boardIndex: number;
 }
+
+export interface SearchTitle {
+  title: string;
+}

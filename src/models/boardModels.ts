@@ -1,5 +1,6 @@
+import { listenerCount } from 'mysql2/typings/mysql/lib/Pool';
 import connect from '../database';
-import { AddBoard, BoardList, LikeType } from '../interface/Board';
+import { AddBoard, BoardList, LikeType, SearchTitle } from '../interface/Board';
 
 const boardModels = {
   createBoard: async (args: AddBoard): Promise<string> => {
@@ -12,26 +13,20 @@ const boardModels = {
       `;
       const totalCount = await conn.query(countBoard);
 
-      console.log('totalCount', totalCount);
-      console.log('들어옴16');
-
       let nextIndex = JSON.parse(JSON.stringify(totalCount[0]));
-      console.log('19', nextIndex);
+
       const findIndex = nextIndex.length === 0 ? (nextIndex = 1) : nextIndex[0].board_index + 1;
-      console.log('findIndex', findIndex);
+
       // insert board
       const insertBoardSql = `
       INSERT INTO boards (email, title, content) Values (?, ?, ?)
       `;
       await conn.query(insertBoardSql, [args.email, args.title, args.content]);
 
-      console.log('들어옴27');
-
       const insertCommitOptionSql = `
         INSERT INTO commit_option(board_index, option_name, min_length, max_length, etc) VALUES (?, ?, ?, ?, ?);
       `;
-      console.log('확인', findIndex);
-      console.log('들어옴34');
+
       await conn.query(insertCommitOptionSql, [
         findIndex,
         args.optionName,
@@ -39,7 +34,7 @@ const boardModels = {
         args.maxLength,
         args.etc || null,
       ]);
-      console.log('들어옴42');
+
       const insertLoop = async () => {
         const genreSql = `
           INSERT INTO board_genre (board_index, genre_code) VALUES (?, ?);
@@ -52,7 +47,6 @@ const boardModels = {
         );
       };
       insertLoop();
-      console.log('들어옴55');
       return 'OK';
     } catch (err) {
       console.log(err);
@@ -129,7 +123,6 @@ const boardModels = {
       }
       return 'OK';
     } catch (err) {
-      console.log(err);
       return err;
     }
   },
@@ -161,7 +154,6 @@ const boardModels = {
 
         await conn.query(insertSql, [args.email, args.boardIndex, false]);
       } else if (checkLikeStr[0].check_up_down === 0) {
-        console.log(checkLikeStr[0].check_up_down);
         const downSql = `
           UPDATE boards SET down_count = down_count - 1 WHERE email = ? AND board_index = ?;
         `;
@@ -191,6 +183,18 @@ const boardModels = {
       console.log(err);
       return err;
     }
+  },
+  findTitle: async (args: SearchTitle): Promise<string[]> => {
+    const conn = await connect();
+
+    const findTitleSql = `
+      SELECT * FROM boards WHERE title LIKE ?
+    `;
+
+    const findList = await conn.query(findTitleSql, [`%${args}%`]);
+    const list = JSON.parse(JSON.stringify(findList[0]));
+
+    return list;
   },
 };
 
