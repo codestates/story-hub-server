@@ -5,7 +5,6 @@ const oauthModels = {
   signWithLogin: async (arg: userInfo): Promise<void> => {
     try {
       const conn = await connect();
-
       const sql = 'SELECT * FROM users WHERE email = ?';
       const result = await conn.query(sql, arg.email);
 

@@ -22,8 +22,8 @@ const commentModule = {
   list: async (req: Request, res: Response): Promise<Response> => {
     try {
       // TODO : 한가지 게시물에 대한 댓글 리스트를 보여준다.
-      const { boardIndex } = req.body;
-      const commentList = await commentModels.getCommentList(boardIndex);
+      const { boardIndex, commitIndex } = req.body;
+      const commentList = await commentModels.getCommentList({ boardIndex, commitIndex });
 
       return res.json({
         commentList,

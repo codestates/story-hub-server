@@ -1,5 +1,5 @@
 import connect from '../database';
-import { commentList, createComment } from '../interface/Comment';
+import { commentList, createComment, getCommentList } from '../interface/Comment';
 
 const commentModels = {
   createComment: async (arg: createComment): Promise<void> => {
@@ -27,14 +27,19 @@ const commentModels = {
       console.log(err);
     }
   },
-  getCommentList: async (boardIndex: number): Promise<commentList> => {
+  getCommentList: async (index: getCommentList): Promise<commentList> => {
     // TODO : 1. join을 통해서 커맨트 내용을 확인한다.
     try {
       const conn = await connect();
-      const findComment = `
-    select * from comments a left join boards_comments b on a.comment_index = b.comment_index where b.board_index = ? order by b.comment_index desc;
-    `;
-      const commentlist = await conn.query(findComment, [boardIndex]);
+      const findBoard = `
+        select * from comments a left join boards_comments b on a.comment_index = b.comment_index where b.board_index = ? order by b.comment_index desc;
+      `;
+      const findCommit = `
+        select * from comments a left join commits_comments b on a.comment_index = b.comment_index where b.commit_index = ? order by b.comment_index desc;
+      `;
+      const commentlist = await conn.query(index.boardIndex ? findBoard : findCommit, [
+        index.boardIndex ? index.boardIndex : index.commitIndex,
+      ]);
       const result = JSON.parse(JSON.stringify(commentlist[0]));
       return { list: result };
     } catch (err) {
