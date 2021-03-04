@@ -273,6 +273,22 @@ const commitModels = {
       return err;
     }
   },
+  commitDepth: async (): Promise<commitList> => {
+    const conn = await connect();
+    try {
+      console.log('sdlfiasdfasdfal');
+      const findDepth = `
+      select a.*, b.depth from boards a left join boards_commits b on a.board_index = b.board_index;
+      `;
+      const reqlist = await conn.query(findDepth, '');
+      console.log('asdlfijasdlf');
+      const result = JSON.parse(JSON.stringify(reqlist[0]));
+      return result;
+    } catch (err) {
+      console.log(err);
+      return err;
+    }
+  },
 };
 
 export default commitModels;
