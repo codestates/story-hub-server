@@ -8,7 +8,7 @@ commitRouter
   .get('/info', commitModule.myPageCommit)
   .get('/depth')
   .get('/alertlist', commitModule.commitAlertList)
-  .get('/list')
+  .get('/list', commitModule.commitList)
   .post('/create', commitModule.create)
   .put('/', commitModule.commitUpdate)
   .put('/like', commitModule.commitLike)
