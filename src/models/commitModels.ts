@@ -46,7 +46,7 @@ const commitModels = {
 
     try {
       const listSql = `
-        SELECT title, up_count, created_at FROM commits WHERE email = ?;
+        SELECT title, up_count, created_at FROM commits WHERE email = ? ORDER BY c.created_at DESC;
       `;
 
       const list = await conn.query(listSql, [args.email]);
@@ -66,6 +66,29 @@ const commitModels = {
       `;
       await conn.query(deleteSql, [arg.email, arg.commitIndex]);
       return true;
+    }catch(err){
+      return err;
+    }
+  },
+
+  commitAlertList: async (args: commit): Promise<string[]> => {
+    const conn = await connect();
+
+    try {
+      const alertListSql = `
+      SELECT c.title, c.content, c.up_count, c.email, c.created_at FROM boards AS b
+      INNER JOIN board_commits AS bc
+      ON b.board_index = bc.board_index
+      INNER JOIN commits AS c
+      ON bc.commit_index = c.commit_index
+      WHERE b.email = ?
+      ORDER BY c.created_at DESC
+      `;
+
+      const alertListResponse = await conn.query(alertListSql, [args.email]);
+      const alertList = JSON.parse(JSON.stringify(alertListResponse[0]));
+
+      return alertList;
     } catch (err) {
       return err;
     }
