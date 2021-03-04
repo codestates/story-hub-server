@@ -3,7 +3,7 @@ export interface comment {
   commitIndex?: number | undefined;
   commentIndex?: number | undefined;
   email: string;
-  content: string;
+  content?: string;
 }
 
 export interface commentList {

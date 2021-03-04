@@ -184,6 +184,19 @@ const commentModels = {
       return false;
     }
   },
+
+  deleteComment: async (arg: comment): Promise<boolean> => {
+    try {
+      const conn = await connect();
+      const deleteQuery = `
+        DELETE from comments where comment_index = ?;
+      `;
+      await conn.query(deleteQuery, [arg.commentIndex]);
+      return true;
+    } catch (err) {
+      return err;
+    }
+  },
 };
 
 export default commentModels;
