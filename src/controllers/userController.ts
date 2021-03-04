@@ -24,7 +24,7 @@ const userModule = {
         return res.status(409).send('비밀번호가 틀렸거나, 탈퇴한 유저입니다.');
       }
       const { accessToken } = login;
-      return res.cookie('accessToken', accessToken).json({
+      return res.json({
         data: {
           accessToken,
         },

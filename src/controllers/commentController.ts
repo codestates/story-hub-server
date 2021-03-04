@@ -103,8 +103,15 @@ const commentModule = {
   },
 
   delete: async (req: Request, res: Response): Promise<Response> => {
+    const { authorization } = req.headers;
+    const { loginType, commentIndex } = req.body;
     try {
-      return res.send('test');
+      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
+      if (email === undefined) {
+        return res.send('검증되지 않은 유저입니다.');
+      }
+      await commentModels.deleteComment({ email, commentIndex });
+      return res.send('OK');
     } catch (err) {
       return err;
     }
