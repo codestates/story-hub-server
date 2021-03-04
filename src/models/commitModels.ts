@@ -41,7 +41,7 @@ const commitModels = {
     }
   },
 
-  myPageCommit: async (args: CommitCreate): Promise<string[]> => {
+  myPageCommit: async (args: commit): Promise<string[]> => {
     const conn = await connect();
 
     try {
