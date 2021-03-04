@@ -14,6 +14,6 @@ commitRouter
   .put('/like')
   .put('/dislike')
   .put('/alert')
-  .delete('/');
+  .delete('/', commitModule.commitDelete);
 
 export default commitRouter;

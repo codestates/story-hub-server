@@ -5,3 +5,8 @@ export interface commit {
   title: string;
   content: string;
 }
+
+export interface commitDelete {
+  email: string;
+  commitIndex: number;
+}

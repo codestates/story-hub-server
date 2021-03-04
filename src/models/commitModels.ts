@@ -1,5 +1,5 @@
 import connect from '../database';
-import { commit } from '../interface/Commit';
+import { commit, commitDelete } from '../interface/Commit';
 
 const commitModels = {
   create: async (args: commit): Promise<string> => {
@@ -57,6 +57,20 @@ const commitModels = {
       return err;
     }
   },
+
+  commitDelete: async (arg: commitDelete): Promise<boolean> => {
+    const conn = await connect();
+    try {
+      const deleteSql = `
+        DELETE from commits where email = ? AND commit_index = ?;
+      `;
+      await conn.query(deleteSql, [arg.email, arg.commitIndex]);
+      return true;
+    }catch(err){
+      return err;
+    }
+  },
+
   commitAlertList: async (args: commit): Promise<string[]> => {
     const conn = await connect();
 
