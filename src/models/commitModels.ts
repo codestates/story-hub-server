@@ -17,14 +17,22 @@ const commitModels = {
 
       const commitIdx = JSON.parse(JSON.stringify(commitResponse[0])).insertId;
 
+      const findMergeCountSql = `
+        SELECT COUNT(merge_check) as cnt FROM board_commits WHERE merge_check = 1;
+      `;
+      const findMergeCount = await conn.query(findMergeCountSql);
+
+      const count = JSON.parse(JSON.stringify(findMergeCount[0]))[0].cnt;
+
       const createBoardCommitSql = `
-        INSERT INTO board_commits (commit_index, board_index) VALUES (?, ?);
+        INSERT INTO board_commits (commit_index, board_index, depth) VALUES (?, ?, ?);
       `;
 
-      await conn.query(createBoardCommitSql, [commitIdx, args.boardIndex]);
+      await conn.query(createBoardCommitSql, [commitIdx, args.boardIndex, count + 1]);
 
       return 'OK';
     } catch (err) {
+      console.log(err);
       return err;
     }
   },
@@ -223,9 +231,9 @@ const commitModels = {
       const detailInfo = JSON.parse(JSON.stringify(result[0]));
 
       return detailInfo;
-     } catch (err) {
+    } catch (err) {
       return err;
-     }
+    }
   },
   commitList: async (): Promise<commentList> => {
     const conn = await connect();
