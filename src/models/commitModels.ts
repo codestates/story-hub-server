@@ -1,6 +1,5 @@
 import connect from '../database';
-import { commentList } from '../interface/Comment';
-import { commit, commitFunction } from '../interface/Commit';
+import { commit, commitFunction, commitList } from '../interface/Commit';
 
 const commitModels = {
   create: async (args: commit): Promise<string> => {
@@ -59,9 +58,9 @@ const commitModels = {
       `;
 
       const list = await conn.query(listSql, [args.email]);
-      const commitList = JSON.parse(JSON.stringify(list[0]));
+      const commitsList = JSON.parse(JSON.stringify(list[0]));
 
-      return commitList;
+      return commitsList;
     } catch (err) {
       return err;
     }
@@ -235,18 +234,31 @@ const commitModels = {
       return err;
     }
   },
-  commitList: async (): Promise<commentList> => {
+  commitList: async (args: commit): Promise<commitList> => {
     const conn = await connect();
     try {
       const getlistSql = `
-        SELECT * from commits;
+        SELECT * FROM commits WHERE board_index = ?;
       `;
-      const reqList = await conn.query(getlistSql);
+      const reqList = await conn.query(getlistSql, [args.boardIndex]);
       const resList = JSON.parse(JSON.stringify(reqList[0]));
 
       return { list: resList };
     } catch (err) {
       return err;
+    }
+  },
+  commitMergeCheck: async (args: commit): Promise<boolean> => {
+    const conn = await connect();
+    try {
+      const mergeCheckSql = `
+        UPDATE board_commits SET merge_check = 1 WHERE commit_index = ?
+      `;
+      await conn.query(mergeCheckSql, [args.commitIndex]);
+
+      return true;
+    } catch (err) {
+      return false;
     }
   },
 };

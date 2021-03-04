@@ -12,6 +12,7 @@ commitRouter
   .get('/list', commitModule.commitList)
   .post('/create', commitModule.create)
   .put('/', commitModule.commitUpdate)
+  .put('/merge', commitModule.commitMerge)
   .put('/like', commitModule.commitLike)
   .put('/dislike', commitModule.commitDisLike)
   .put('/alert')
