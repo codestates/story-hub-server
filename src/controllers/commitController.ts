@@ -5,7 +5,16 @@ import { getUserInfo } from './common/function';
 const commitModule = {
   create: async (req: Request, res: Response): Promise<Response> => {
     try {
-      return res.send('hi');
+      const { loginType } = req.body;
+      const { authorization } = req.headers;
+      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
+      req.body.email = email;
+
+      const commitCreate = await commitModels.create(req.body);
+      if (commitCreate === 'OK') {
+        return res.send({ message: 'OK' });
+      }
+      return res.send({ message: 'Fail' });
     } catch (err) {
       return res.send(err);
     }
