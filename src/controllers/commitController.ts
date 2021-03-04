@@ -21,7 +21,8 @@ const commitModule = {
   },
   commitList: async (req: Request, res: Response): Promise<Response> => {
     try {
-      const list = await commitModels.commitList();
+      const { boardIndex } = req.body;
+      const list = await commitModels.commitList(boardIndex);
       return res.json(list);
     } catch (err) {
       return res.send(err);
@@ -134,7 +135,16 @@ const commitModule = {
   },
   commitMerge: async (req: Request, res: Response): Promise<Response> => {
     try {
-      return res.send('hi');
+      const { loginType } = req.body;
+      const { authorization } = req.headers;
+      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
+      req.body.email = email;
+
+      const result = await commitModels.commitMergeCheck(req.body);
+      if (result) {
+        return res.send({ message: 'OK' });
+      }
+      return res.send({ message: 'Fail' });
     } catch (err) {
       return res.send(err);
     }
