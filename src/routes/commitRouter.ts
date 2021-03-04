@@ -10,7 +10,7 @@ commitRouter
   .get('/alert_list')
   .get('/list')
   .post('/create', commitModule.create)
-  .put('/')
+  .put('/', commitModule.commitUpdate)
   .put('/like')
   .put('/dislike')
   .put('/alert')
