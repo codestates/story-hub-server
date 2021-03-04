@@ -50,7 +50,14 @@ const commentModule = {
   },
 
   modify: async (req: Request, res: Response): Promise<Response> => {
+    const { authorization } = req.headers;
+    const { loginType, commentIndex, content } = req.body;
     try {
+      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
+      if (email === undefined) {
+        return res.send('검증되지 않은 유저입니다.');
+      }
+      await commentModels.editComment({ email, commentIndex, content });
       return res.send('test');
     } catch (err) {
       return err;

@@ -1,6 +1,7 @@
-export interface createComment {
+export interface comment {
   boardIndex?: number | undefined;
   commitIndex?: number | undefined;
+  commentIndex?: number | undefined;
   email: string;
   content: string;
 }

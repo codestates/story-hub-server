@@ -1,8 +1,8 @@
 import connect from '../database';
-import { commentList, createComment, getCommentList, likeOrDislike } from '../interface/Comment';
+import { commentList, comment, getCommentList, likeOrDislike } from '../interface/Comment';
 
 const commentModels = {
-  createComment: async (arg: createComment): Promise<void> => {
+  createComment: async (arg: comment): Promise<void> => {
     try {
       const conn = await connect();
       // ! 애초에 존재하지 않는 글, 커밋에 대해서는 댓글을 작성할 수 없다.
@@ -170,6 +170,18 @@ const commentModels = {
     } catch (err) {
       console.log(err);
       return true;
+    }
+  },
+  editComment: async (arg: comment): Promise<boolean> => {
+    try {
+      const conn = await connect();
+      const editquery = `
+        UPDATE comments SET content = ? where comment_index = ? AND email =?;
+      `;
+      await conn.query(editquery, [arg.content, arg.commentIndex, arg.email]);
+      return true;
+    } catch (err) {
+      return false;
     }
   },
 };
