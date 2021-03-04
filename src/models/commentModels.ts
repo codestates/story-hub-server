@@ -197,6 +197,21 @@ const commentModels = {
       return err;
     }
   },
+
+  // TODO : 내가 작성한 댓글의 목록을 가지고 온다. Board에대한 댓글, Commit에 대한 댓글
+  myCommentList: async (arg: comment): Promise<commentList> => {
+    try {
+      const conn = await connect();
+      const listQuery = `
+        SELECT content, up_count, down_count, created_at from comments order by created_at desc;
+      `;
+      const listReq = await conn.query(listQuery, arg.email);
+      const listRes = JSON.parse(JSON.stringify(listReq[0]));
+      return { list: listRes };
+    } catch (err) {
+      return err;
+    }
+  },
 };
 
 export default commentModels;
