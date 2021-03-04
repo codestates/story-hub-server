@@ -1,5 +1,7 @@
 import { Router } from 'express';
+import controllerModule from '../controllers';
 
+const { commitModule } = controllerModule;
 const commitRouter = Router();
 
 commitRouter
@@ -7,7 +9,7 @@ commitRouter
   .get('/depth')
   .get('/alert_list')
   .get('/list')
-  .post('/create')
+  .post('/create', commitModule.create)
   .put('/')
   .put('/like')
   .put('/dislike')
