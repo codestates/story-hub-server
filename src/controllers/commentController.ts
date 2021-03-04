@@ -42,8 +42,16 @@ const commentModule = {
   },
 
   info: async (req: Request, res: Response): Promise<Response> => {
+    // 마이페이지 갈때 요청들어온다.
+    const { authorization } = req.headers;
+    const { loginType } = req.body;
     try {
-      return res.send('test');
+      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
+      if (email === undefined) {
+        return res.send('검증되지 않은 유저입니다.');
+      }
+      const list = await commentModels.myCommentList({ email });
+      return res.json(list);
     } catch (err) {
       return err;
     }
