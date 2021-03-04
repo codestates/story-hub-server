@@ -9,6 +9,7 @@ commitRouter
   .get('/depth')
   .get('/alertlist', commitModule.commitAlertList)
   .get('/list')
+  .get('/detail', commitModule.commitDetail)
   .post('/create', commitModule.create)
   .put('/', commitModule.commitUpdate)
   .put('/like', commitModule.commitLike)
