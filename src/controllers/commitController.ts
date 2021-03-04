@@ -98,7 +98,9 @@ const commitModule = {
   },
   commitDepth: async (req: Request, res: Response): Promise<Response> => {
     try {
-      return res.send('hi');
+      const depthList = await commitModels.commitDepth();
+      console.log(depthList);
+      return res.json(depthList);
     } catch (err) {
       return res.send(err);
     }

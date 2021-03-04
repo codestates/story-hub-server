@@ -1,6 +1,6 @@
 import connect from '../database';
 import { commentList } from '../interface/Comment';
-import { commit, commitFunction } from '../interface/Commit';
+import { commit, commitFunction, commitList } from '../interface/Commit';
 
 const commitModels = {
   create: async (args: commit): Promise<string> => {
@@ -258,6 +258,22 @@ const commitModels = {
       await conn.query(alertUpdateSql, arg.commitIndex);
       return true;
     } catch (err) {
+      return err;
+    }
+  },
+  commitDepth: async (): Promise<commitList> => {
+    const conn = await connect();
+    try {
+      console.log('sdlfiasdfasdfal');
+      const findDepth = `
+      select a.*, b.depth from boards a left join boards_commits b on a.board_index = b.board_index;
+      `;
+      const reqlist = await conn.query(findDepth, '');
+      console.log('asdlfijasdlf');
+      const result = JSON.parse(JSON.stringify(reqlist[0]));
+      return result;
+    } catch (err) {
+      console.log(err);
       return err;
     }
   },
