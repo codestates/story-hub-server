@@ -31,7 +31,7 @@ const boardModels = {
       await conn.query(insertBoardSql, [args.email, args.title, args.content, args.discription]);
 
       const insertCommitOptionSql = `
-        INSERT INTO commit_option(board_index, option_name, min_length, max_length, etc) VALUES (?, ?, ?, ?, ?);
+        INSERT INTO commit_options (board_index, option_name, min_length, max_length, etc) VALUES (?, ?, ?, ?, ?);
       `;
 
       await conn.query(insertCommitOptionSql, [
@@ -44,7 +44,7 @@ const boardModels = {
 
       const insertLoop = async () => {
         const genreSql = `
-          INSERT INTO board_genre (board_index, genre_code) VALUES (?, ?);
+          INSERT INTO board_genres (board_index, genre_code) VALUES (?, ?);
         `;
         Promise.all(
           args.genreName.map(async (genre) => {
@@ -244,7 +244,7 @@ const boardModels = {
     const conn = await connect();
 
     const favoriteListSql = `
-      SELECT * FROM user_board_favorite WHERE email = ? ORDER BY created_at DESC;
+      SELECT * FROM user_board_favorites WHERE email = ? ORDER BY created_at DESC;
     `;
     const favoriteList = await conn.query(favoriteListSql, [args.email]);
     const favoriteListArr = JSON.parse(JSON.stringify(favoriteList[0]));
@@ -258,7 +258,7 @@ const boardModels = {
       const result = [
         'SELECT title as boardTitle, content as boardContent FROM boards WHERE email = ?;',
         'SELECT title as commitTitle, up_count as commitUpCount, created_at FROM commits WHERE email = ?;',
-        'SELECT content as commentContent, up_count FROM comment WHERE email = ?;',
+        'SELECT content as commentContent, up_count FROM comments WHERE email = ?;',
       ];
       const detailList = await Promise.all(
         result.map(async (item) => {
@@ -280,8 +280,8 @@ const boardModels = {
     try {
       const result = [
         'SELECT b.title, b.email, b.description FROM boards AS b WHERE email = ?;',
-        'SELECT co.option_name, co.min_length, co.max_length, co.etc FROM commit_option AS co INNER JOIN boards AS b ON co.board_index = b.board_index WHERE b.email = ?',
-        'SELECT g.genre_name FROM boards AS b INNER JOIN board_genre AS bg ON b.board_index = bg.board_index INNER JOIN genre AS g ON bg.genre_code = g.genre_code WHERE b.board_index = ?',
+        'SELECT co.option_name, co.min_length, co.max_length, co.etc FROM commit_options AS co INNER JOIN boards AS b ON co.board_index = b.board_index WHERE b.email = ?',
+        'SELECT g.genre_name FROM boards AS b INNER JOIN board_genres AS bg ON b.board_index = bg.board_index INNER JOIN genres AS g ON bg.genre_code = g.genre_code WHERE b.board_index = ?',
       ];
 
       const detailList = await Promise.all(
@@ -293,6 +293,39 @@ const boardModels = {
       );
 
       return detailList;
+    } catch (err) {
+      console.log(err);
+      return err;
+    }
+  },
+  storyDetailContent: async (args: storyDetail): Promise<string[]> => {
+    const conn = await connect();
+
+    try {
+      const storyContentSql = `
+      SELECT b.title AS boardTitle, c.content AS commitContent, b.email AS boardEmail, c.email AS commitEmail FROM boards AS b
+      INNER JOIN board_commits AS bc
+      ON b.board_index = bc.board_index
+      INNER JOIN commits AS c
+      ON bc.commit_index = c.commit_index
+      WHERE bc.merge_check = 1 AND b.board_index = ?;
+      `;
+      const contentResponse = await conn.query(storyContentSql, [args.boardIndex]);
+      const storyContentList = JSON.parse(JSON.stringify(contentResponse[0]));
+
+      const genreSql = `
+      SELECT g.genre_name
+      FROM boards AS b
+      INNER JOIN board_genres AS bg
+      on b.board_index = bg.board_index
+      INNER JOIN genres AS g
+      ON g.genre_code = bg.genre_code
+      WHERE b.board_index = ?;
+      `;
+      const genreResponse = await conn.query(genreSql, [args.boardIndex]);
+      const genreList = JSON.parse(JSON.stringify(genreResponse[0]));
+
+      return [storyContentList, genreList];
     } catch (err) {
       console.log(err);
       return err;

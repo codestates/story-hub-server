@@ -144,7 +144,7 @@ const boardModule = {
       return res.send(err);
     }
   },
-  storyDetail: async (req: Request, res: Response): Promise<Response> => {
+  storyDetailInfo: async (req: Request, res: Response): Promise<Response> => {
     try {
       const { loginType } = req.body;
       const { authorization } = req.headers;
@@ -156,6 +156,20 @@ const boardModule = {
       return res.send({ storyDetailInfo });
     } catch (err) {
       return res.send(err);
+    }
+  },
+  storyDetailContent: async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const { loginType } = req.body;
+      const { authorization } = req.headers;
+      console.log(loginType, authorization);
+      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
+      req.body.email = email;
+
+      const response = await boardModels.storyDetailContent(req.body);
+      return res.send({ storyContent: response[0], genreList: response[1] });
+    } catch (err) {
+      return err;
     }
   },
 };
