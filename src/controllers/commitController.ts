@@ -130,6 +130,20 @@ const commitModule = {
       return res.send(err);
     }
   },
+  commitDetail: async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const { loginType } = req.body;
+      const { authorization } = req.headers;
+      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
+      req.body.email = email;
+
+      const detailInfo = await commitModels.commitDetail(req.body);
+
+      return res.send({ detailInfo });
+    } catch (err) {
+      return res.send(err);
+    }
+  },
 };
 
 export default commitModule;

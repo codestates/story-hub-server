@@ -205,6 +205,28 @@ const commitModels = {
       return true;
     }
   },
+  commitDetail: async (args: commit): Promise<string[]> => {
+    const conn = await connect();
+    try {
+      const detailSql = `
+      SELECT c.commit_index, c.title AS commitTitle, c.content AS commitContent,
+      c.visit_count, ct.email AS writer, ct.content AS commentContent, ct.created_at
+      FROM commits AS c
+      LEFT JOIN commit_comments AS cc
+      ON c.commit_index = cc.commit_index
+      LEFT JOIN comments AS ct
+      ON cc.comment_index = ct.comment_index
+      WHERE c.commit_index = ?
+      ORDER BY cc.created_at;
+      `;
+      const result = await conn.query(detailSql, [args.commitIndex]);
+      const detailInfo = JSON.parse(JSON.stringify(result[0]));
+
+      return detailInfo;
+     } catch (err) {
+      return err;
+     }
+  },
   commitList: async (): Promise<commentList> => {
     const conn = await connect();
     try {
