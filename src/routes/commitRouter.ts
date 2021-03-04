@@ -12,7 +12,7 @@ commitRouter
   .post('/create', commitModule.create)
   .put('/', commitModule.commitUpdate)
   .put('/like', commitModule.commitLike)
-  .put('/dislike')
+  .put('/dislike', commitModule.commitDisLike)
   .put('/alert')
   .delete('/', commitModule.commitDelete);
 
