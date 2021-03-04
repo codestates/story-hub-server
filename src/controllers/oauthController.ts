@@ -5,11 +5,14 @@ import tokenModule from '../token';
 const oauthModule = {
   kakao: async (req: Request, res: Response): Promise<Response> => {
     try {
-      const accessToken = req.body.access_token;
-      const result = await tokenModule.verifyKakaoAccessToken(accessToken);
-      const { email, userName, nickname } = result;
+      const { authorization } = req.headers;
+
+      const response = await tokenModule.verifyKakaoAccessToken(
+        String(authorization?.split(' ')[1])
+      );
+      const { email, userName, nickname } = response;
       await oauthModels.signWithLogin({ email, userName, nickname });
-      return res.json({ accessToken, type: 1 });
+      return res.json({ type: 1 });
     } catch (err) {
       return res.send(err);
     }
