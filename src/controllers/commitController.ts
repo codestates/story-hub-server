@@ -56,7 +56,13 @@ const commitModule = {
   },
   myPageCommit: async (req: Request, res: Response): Promise<Response> => {
     try {
-      return res.send('hi');
+      const { loginType } = req.body;
+      const { authorization } = req.headers;
+      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
+      req.body.email = email;
+
+      const commitList = await commitModels.myPageCommit(req.body);
+      return res.send({ commitList });
     } catch (err) {
       return res.send(err);
     }
