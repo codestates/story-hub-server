@@ -144,5 +144,19 @@ const boardModule = {
       return res.send(err);
     }
   },
+  storyDetail: async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const { loginType } = req.body;
+      const { authorization } = req.headers;
+      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
+      req.body.email = email;
+
+      const storyDetailInfo = await boardModels.storyDetailList(req.body);
+
+      return res.send({ storyDetailInfo });
+    } catch (err) {
+      return res.send(err);
+    }
+  },
 };
 export default boardModule;

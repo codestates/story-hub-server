@@ -39,3 +39,8 @@ export interface UpdateBoard {
 export interface EmailInfo {
   email: string;
 }
+
+export interface storyDetail {
+  email: string;
+  boardIndex: number;
+}

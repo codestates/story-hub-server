@@ -7,6 +7,7 @@ import {
   EmailInfo,
   SearchTitle,
   UpdateBoard,
+  storyDetail,
 } from '../interface/Board';
 
 const boardModels = {
@@ -259,9 +260,33 @@ const boardModels = {
         'SELECT title as commitTitle, up_count as commitUpCount, created_at FROM commits WHERE email = ?;',
         'SELECT content as commentContent, up_count FROM comment WHERE email = ?;',
       ];
-      const detailList = Promise.all(
+      const detailList = await Promise.all(
         result.map(async (item) => {
           const detailListInfo = await conn.query(item, [args.email]);
+          const detailListArr = JSON.parse(JSON.stringify(detailListInfo[0]));
+          return detailListArr;
+        })
+      );
+
+      return detailList;
+    } catch (err) {
+      console.log(err);
+      return err;
+    }
+  },
+  storyDetailList: async (args: storyDetail): Promise<string[]> => {
+    const conn = await connect();
+
+    try {
+      const result = [
+        'SELECT b.title, b.email, b.description FROM boards AS b WHERE email = ?;',
+        'SELECT co.option_name, co.min_length, co.max_length, co.etc FROM commit_option AS co INNER JOIN boards AS b ON co.board_index = b.board_index WHERE b.email = ?',
+        'SELECT g.genre_name FROM boards AS b INNER JOIN board_genre AS bg ON b.board_index = bg.board_index INNER JOIN genre AS g ON bg.genre_code = g.genre_code WHERE b.board_index = ?',
+      ];
+
+      const detailList = await Promise.all(
+        result.map(async (item, idx) => {
+          const detailListInfo = await conn.query(item, [idx === 2 ? args.boardIndex : args.email]);
           const detailListArr = JSON.parse(JSON.stringify(detailListInfo[0]));
           return detailListArr;
         })
