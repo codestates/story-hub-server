@@ -10,3 +10,7 @@ export interface commitFunction {
   email: string;
   commitIndex: number;
 }
+
+export interface commitList {
+  list: (string | number)[];
+}

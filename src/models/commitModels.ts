@@ -1,4 +1,5 @@
 import connect from '../database';
+import { commentList } from '../interface/Comment';
 import { commit, commitFunction } from '../interface/Commit';
 
 const commitModels = {
@@ -222,6 +223,20 @@ const commitModels = {
       const detailInfo = JSON.parse(JSON.stringify(result[0]));
 
       return detailInfo;
+     } catch (err) {
+      return err;
+     }
+  },
+  commitList: async (): Promise<commentList> => {
+    const conn = await connect();
+    try {
+      const getlistSql = `
+        SELECT * from commits;
+      `;
+      const reqList = await conn.query(getlistSql);
+      const resList = JSON.parse(JSON.stringify(reqList[0]));
+
+      return { list: resList };
     } catch (err) {
       return err;
     }

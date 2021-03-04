@@ -21,7 +21,8 @@ const commitModule = {
   },
   commitList: async (req: Request, res: Response): Promise<Response> => {
     try {
-      return res.send('hi');
+      const list = await commitModels.commitList();
+      return res.json(list);
     } catch (err) {
       return res.send(err);
     }
