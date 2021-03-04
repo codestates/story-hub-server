@@ -7,7 +7,7 @@ const commitRouter = Router();
 commitRouter
   .get('/info', commitModule.myPageCommit)
   .get('/depth')
-  .get('/alert_list')
+  .get('/alertlist', commitModule.commitAlertList)
   .get('/list')
   .post('/create', commitModule.create)
   .put('/', commitModule.commitUpdate)
