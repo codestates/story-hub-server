@@ -5,7 +5,7 @@ const { commitModule } = controllerModule;
 const commitRouter = Router();
 
 commitRouter
-  .get('/info')
+  .get('/info', commitModule.myPageCommit)
   .get('/depth')
   .get('/alert_list')
   .get('/list')

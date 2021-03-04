@@ -27,7 +27,7 @@ const commitModels = {
       return err;
     }
   },
-
+  
   commitUpdate: async (arg: commit): Promise<boolean> => {
     const conn = await connect();
     try {
@@ -36,6 +36,23 @@ const commitModels = {
       `;
       await conn.query(updateSql, [arg.title, arg.content, arg.email, arg.commitIndex]);
       return true;
+    } catch (err) {
+      return err;
+    }
+  },
+
+  myPageCommit: async (args: CommitCreate): Promise<string[]> => {
+    const conn = await connect();
+
+    try {
+      const listSql = `
+        SELECT title, up_count, created_at FROM commits WHERE email = ?;
+      `;
+
+      const list = await conn.query(listSql, [args.email]);
+      const commitList = JSON.parse(JSON.stringify(list[0]));
+
+      return commitList;
     } catch (err) {
       return err;
     }
