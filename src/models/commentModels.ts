@@ -223,10 +223,10 @@ const commentModels = {
     try {
       const conn = await connect();
       const alertBoardQuery = `
-      select a.email, a.content, a.up_count, a.down_count, a.created_at from comments a left join boards_comments b on a.comment_index = b.comment_index where a.email = ? AND b.is_checked = 0 Order by created_at desc;
+      select a.comment_index, a.email, a.content, a.up_count, a.down_count, a.created_at from comments a left join boards_comments b on a.comment_index = b.comment_index where a.email = ? AND b.is_checked = 0 Order by created_at desc;
       `;
       const alertCommitQuery = `
-      select a.email, a.content, a.up_count, a.down_count, a.created_at from comments a left join commits_comments b on a.comment_index = b.comment_index where a.email = ? AND b.is_checked = 0 Order by created_at desc;
+      select a.comment_index, a.email, a.content, a.up_count, a.down_count, a.created_at from comments a left join commits_comments b on a.comment_index = b.comment_index where a.email = ? AND b.is_checked = 0 Order by created_at desc;
       `;
 
       const queryReq = await conn.query(alertBoardQuery + alertCommitQuery, [arg.email, arg.email]);
@@ -236,6 +236,41 @@ const commentModels = {
       return { boardAlert, commitAlert };
     } catch (err) {
       return err;
+    }
+  },
+  alertCheck: async (arg: comment): Promise<boolean> => {
+    try {
+      const conn = await connect();
+      // TODO : 입력받은 커밋 인덱스가 어디 위치한지 찾는다.
+      const a = `
+        SELECT exists ( select * from boards_comments where comment_index = ?) as isCheck;
+      `;
+      const b = `
+        SELECT exists ( select * from commits_comments where comment_index = ?) as isCheck;
+      `;
+      const checkboardReq = await conn.query(a, arg.commentIndex);
+      const checkCommitdReq = await conn.query(b, arg.commentIndex);
+      const boardRes = JSON.parse(JSON.stringify(checkboardReq[0]));
+      if (boardRes[0].isCheck) {
+        console.log('보드에 댓글이 있습니다.');
+        const alertUpdate = `
+          UPDATE boards_comments SET is_checked = 1 where comment_index = ?;
+        `;
+        await conn.query(alertUpdate, arg.commentIndex);
+        return true;
+      }
+      const commitRes = JSON.parse(JSON.stringify(checkCommitdReq[0]));
+      if (commitRes[0].isCheck) {
+        console.log('커밋에 댓글이 있습니다.');
+        const alertUpdate = `
+          UPDATE commits_comments SET is_checked = 1 where comment_index = ?;
+        `;
+        await conn.query(alertUpdate, arg.commentIndex);
+        return true;
+      }
+      return true;
+    } catch (err) {
+      return false;
     }
   },
 };
