@@ -65,17 +65,23 @@ const commentModule = {
       if (email === undefined) {
         return res.send('검증되지 않은 유저입니다.');
       }
-      // eslint-disable-next-line no-unused-vars
-      const response = await commentModels.likeComment({ email, commentIndex });
-      return res.send('test');
+      await commentModels.likeComment({ email, commentIndex });
+      return res.json({ message: 'like' });
     } catch (err) {
       return err;
     }
   },
 
   dislike: async (req: Request, res: Response): Promise<Response> => {
+    const { authorization } = req.headers;
+    const { loginType, commentIndex } = req.body;
     try {
-      return res.send('test');
+      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
+      if (email === undefined) {
+        return res.send('검증되지 않은 유저입니다.');
+      }
+      await commentModels.dislikeComment({ email, commentIndex });
+      return res.json({ message: 'dislike' });
     } catch (err) {
       return err;
     }
