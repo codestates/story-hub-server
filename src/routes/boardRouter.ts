@@ -8,6 +8,7 @@ const boardRouter = express.Router();
 boardRouter
   .get('/list', boardModule.list)
   .get('/info', boardModule.info)
+  .get('/mypagedetail', boardModule.mypageDetail)
   .get('/favoriteinfo', boardModule.favorite)
   .post('/create', boardModule.create)
   .post('/find_title', boardModule.findTitle)

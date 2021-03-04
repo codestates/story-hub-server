@@ -250,6 +250,29 @@ const boardModels = {
 
     return favoriteListArr;
   },
+  mypageDetailList: async (args: EmailInfo): Promise<string[]> => {
+    const conn = await connect();
+
+    try {
+      const result = [
+        'SELECT title as boardTitle, content as boardContent FROM boards WHERE email = ?;',
+        'SELECT title as commitTitle, up_count as commitUpCount, created_at FROM commits WHERE email = ?;',
+        'SELECT content as commentContent, up_count FROM comment WHERE email = ?;',
+      ];
+      const detailList = Promise.all(
+        result.map(async (item) => {
+          const detailListInfo = await conn.query(item, [args.email]);
+          const detailListArr = JSON.parse(JSON.stringify(detailListInfo[0]));
+          return detailListArr;
+        })
+      );
+
+      return detailList;
+    } catch (err) {
+      console.log(err);
+      return err;
+    }
+  },
 };
 
 export default boardModels;
