@@ -223,9 +223,9 @@ const commitModels = {
       const detailInfo = JSON.parse(JSON.stringify(result[0]));
 
       return detailInfo;
-     } catch (err) {
+    } catch (err) {
       return err;
-     }
+    }
   },
   commitList: async (): Promise<commentList> => {
     const conn = await connect();
@@ -237,6 +237,18 @@ const commitModels = {
       const resList = JSON.parse(JSON.stringify(reqList[0]));
 
       return { list: resList };
+    } catch (err) {
+      return err;
+    }
+  },
+  commitUpdateAlert: async (arg: commitFunction): Promise<boolean> => {
+    const conn = await connect();
+    try {
+      const alertUpdateSql = `
+        UPDATE boards_commits SET is_checked = 1 where commit_index = ?;
+      `;
+      await conn.query(alertUpdateSql, arg.commitIndex);
+      return true;
     } catch (err) {
       return err;
     }
