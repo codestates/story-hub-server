@@ -6,7 +6,7 @@ export interface commit {
   content: string;
 }
 
-export interface commitDelete {
+export interface commitFunction {
   email: string;
   commitIndex: number;
 }

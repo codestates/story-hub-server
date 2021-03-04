@@ -62,10 +62,17 @@ const commitModule = {
     }
   },
   commitDisLike: async (req: Request, res: Response): Promise<Response> => {
+    const { authorization } = req.headers;
+    const { loginType, commitIndex } = req.body;
     try {
-      return res.send('hi');
+      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
+      if (email === undefined) {
+        return res.send('검증되지 않은 유저입니다.');
+      }
+      await commitModels.dislikeComment({ email, commitIndex });
+      return res.json({ message: 'dislike' });
     } catch (err) {
-      return res.send(err);
+      return err;
     }
   },
   myPageCommit: async (req: Request, res: Response): Promise<Response> => {
