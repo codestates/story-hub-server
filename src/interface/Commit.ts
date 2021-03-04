@@ -1,6 +1,7 @@
-export interface CommitCreate {
+export interface commit {
   email: string;
-  boardIndex: number;
+  boardIndex?: number;
+  commitIndex?: number;
   title: string;
   content: string;
 }

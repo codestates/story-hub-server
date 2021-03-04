@@ -1,8 +1,8 @@
 import connect from '../database';
-import { CommitCreate } from '../interface/Commit';
+import { commit } from '../interface/Commit';
 
 const commitModels = {
-  create: async (args: CommitCreate): Promise<string> => {
+  create: async (args: commit): Promise<string> => {
     const conn = await connect();
     try {
       const createCommitSql = `
@@ -23,6 +23,19 @@ const commitModels = {
       await conn.query(createBoardCommitSql, [commitIdx, args.boardIndex]);
 
       return 'OK';
+    } catch (err) {
+      return err;
+    }
+  },
+
+  commitUpdate: async (arg: commit): Promise<boolean> => {
+    const conn = await connect();
+    try {
+      const updateSql = `
+        UPDATE commits SET title = ?, content = ?, updated_at = now() where email =? AND commit_index =?;
+      `;
+      await conn.query(updateSql, [arg.title, arg.content, arg.email, arg.commitIndex]);
+      return true;
     } catch (err) {
       return err;
     }
