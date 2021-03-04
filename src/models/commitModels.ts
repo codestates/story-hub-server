@@ -261,6 +261,18 @@ const commitModels = {
       return false;
     }
   },
+  commitUpdateAlert: async (arg: commitFunction): Promise<boolean> => {
+    const conn = await connect();
+    try {
+      const alertUpdateSql = `
+        UPDATE boards_commits SET is_checked = 1 where commit_index = ?;
+      `;
+      await conn.query(alertUpdateSql, arg.commitIndex);
+      return true;
+    } catch (err) {
+      return err;
+    }
+  },
 };
 
 export default commitModels;

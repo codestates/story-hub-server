@@ -15,7 +15,7 @@ commitRouter
   .put('/merge', commitModule.commitMerge)
   .put('/like', commitModule.commitLike)
   .put('/dislike', commitModule.commitDisLike)
-  .put('/alert')
+  .put('/alert', commitModule.commitUpdateAlert)
   .delete('/', commitModule.commitDelete);
 
 export default commitRouter;
