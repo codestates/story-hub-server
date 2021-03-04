@@ -152,7 +152,7 @@ const commentModels = {
         // ! 싫어요를 누른 상태
         // TODO : 싫어요가 눌린 상태라면 comment에 downcount를 하나 삭제해주고 내가 좋아한 목록에서 지워준다.
         const countDown = `
-        UPDATE comments SET up_count = down_count - 1 where comment_index = ? 
+        UPDATE comments SET down_count = down_count - 1 where comment_index = ? 
         `;
         await conn.query(countDown, arg.commentIndex);
         const deletelist = `
