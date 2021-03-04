@@ -1,5 +1,11 @@
 import connect from '../database';
-import { commentList, comment, getCommentList, likeOrDislike } from '../interface/Comment';
+import {
+  commentList,
+  comment,
+  getCommentList,
+  likeOrDislike,
+  alertList,
+} from '../interface/Comment';
 
 const commentModels = {
   createComment: async (arg: comment): Promise<void> => {
@@ -208,6 +214,26 @@ const commentModels = {
       const listReq = await conn.query(listQuery, arg.email);
       const listRes = JSON.parse(JSON.stringify(listReq[0]));
       return { list: listRes };
+    } catch (err) {
+      return err;
+    }
+  },
+
+  newAlertList: async (arg: comment): Promise<alertList> => {
+    try {
+      const conn = await connect();
+      const alertBoardQuery = `
+      select a.email, a.content, a.up_count, a.down_count, a.created_at from comments a left join boards_comments b on a.comment_index = b.comment_index where a.email = ? AND b.is_checked = 0 Order by created_at desc;
+      `;
+      const alertCommitQuery = `
+      select a.email, a.content, a.up_count, a.down_count, a.created_at from comments a left join commits_comments b on a.comment_index = b.comment_index where a.email = ? AND b.is_checked = 0 Order by created_at desc;
+      `;
+
+      const queryReq = await conn.query(alertBoardQuery + alertCommitQuery, [arg.email, arg.email]);
+      const result = JSON.parse(JSON.stringify(queryReq[0]));
+      const boardAlert = result[0];
+      const commitAlert = result[1];
+      return { boardAlert, commitAlert };
     } catch (err) {
       return err;
     }

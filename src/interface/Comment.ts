@@ -19,3 +19,8 @@ export interface likeOrDislike {
   email: string;
   commentIndex: number;
 }
+
+export interface alertList {
+  boardAlert: (string | number)[];
+  commitAlert: (string | number)[];
+}
