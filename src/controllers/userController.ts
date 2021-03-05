@@ -26,6 +26,7 @@ const userModule = {
       const { accessToken } = login;
       return res.json({
         accessToken,
+        loginType: 0,
       });
     } catch (err) {
       return err;
