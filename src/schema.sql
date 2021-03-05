@@ -62,12 +62,6 @@ CREATE TABLE `board_commits` (
 LOCK TABLES `board_commits` WRITE;
 /*!40000 ALTER TABLE `board_commits` DISABLE KEYS */;
 
-INSERT INTO `board_commits` (`commit_index`, `board_index`, `merge_check`, `is_checked`, `depth`, `created_at`, `updated_at`)
-VALUES
-	(19,1,0,0,1,'2021-03-04 18:31:12','2021-03-04 18:31:12'),
-	(20,1,0,0,1,'2021-03-04 18:31:37','2021-03-04 18:31:37'),
-	(21,1,0,0,1,'2021-03-04 18:31:40','2021-03-04 18:31:40');
-
 /*!40000 ALTER TABLE `board_commits` ENABLE KEYS */;
 UNLOCK TABLES;
 
