@@ -15,7 +15,6 @@ const userModels = {
       if (idCheck[0].toString().length === 0) {
         return { onCheck: true };
       }
-      console.log(idCheck[0]);
       return { onCheck: false };
     } catch (err) {
       return err;
@@ -46,10 +45,14 @@ const userModels = {
   },
   createUser: async (arg: userInfo): Promise<void> => {
     const conn = await connect();
-    const signupQuery = `
+    try {
+      const signupQuery = `
       INSERT INTO USERS(email, password, user_name, nickname) values (?, ?, ?, ?);
     `;
-    await conn.query(signupQuery, [arg.email, arg.password, arg.userName, arg.nickname]);
+      await conn.query(signupQuery, [arg.email, arg.password, arg.userName, arg.nickname]);
+    } catch (err) {
+      console.log(err);
+    }
   },
 
   updateUser: async (arg: userInfo): Promise<string> => {
