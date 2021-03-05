@@ -25,9 +25,7 @@ const userModule = {
       }
       const { accessToken } = login;
       return res.json({
-        data: {
-          accessToken,
-        },
+        accessToken,
       });
     } catch (err) {
       return err;
@@ -45,7 +43,7 @@ const userModule = {
     );
     try {
       const idCheck = await userModels.findUser({ email });
-      if (idCheck) {
+      if (idCheck.onCheck) {
         await userModels.createUser({
           email,
           password: hasPw.toString('hex'),
