@@ -12,7 +12,7 @@ const oauthModule = {
       );
       const { email, userName, nickname } = response;
       await oauthModels.signWithLogin({ email, userName, nickname });
-      return res.json({ type: 1 });
+      return res.json({ loginType: 1 });
     } catch (err) {
       return res.send(err);
     }
@@ -29,7 +29,7 @@ const oauthModule = {
       const { userName, email, nickname } = response;
       await oauthModels.signWithLogin({ userName, email, nickname });
 
-      return res.json({ userName, email, nickname });
+      return res.json({ loginType: 2 });
     } catch (err) {
       return res.send('err');
     }
