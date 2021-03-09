@@ -32,9 +32,9 @@ const commentModule = {
 
   alert_list: async (req: Request, res: Response): Promise<Response> => {
     const { authorization } = req.headers;
-    const { loginType } = req.body;
+    const { loginType } = req.query;
     try {
-      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
+      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), Number(loginType));
       if (email === undefined) {
         return res.send('검증되지 않은 유저입니다.');
       }

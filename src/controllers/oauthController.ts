@@ -22,7 +22,6 @@ const oauthModule = {
     try {
       const { authorization } = req.headers;
       const token = String(authorization?.split(' ')[1]);
-      console.log(token);
       const response = await tokenModule.verifyGoogleAccessToken(token);
       const { userName, email, nickname } = response;
       await oauthModels.signWithLogin({ userName, email, nickname });

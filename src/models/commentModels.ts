@@ -223,10 +223,14 @@ const commentModels = {
     try {
       const conn = await connect();
       const alertBoardQuery = `
-      select a.comment_index, a.email, a.content, a.up_count, a.down_count, a.created_at from comments a left join boards_comments b on a.comment_index = b.comment_index where a.email = ? AND b.is_checked = 0 Order by created_at desc;
+        select c.comment_index as commentId, c.email, c.content, c.up_count as upCount,
+        c.down_count as downCount, c.created_at as createdAt from comments c
+        left join boards_comments bc on c.comment_index = bc.comment_index where NOT email = ? AND bc.is_checked = 0; 
       `;
       const alertCommitQuery = `
-      select a.comment_index, a.email, a.content, a.up_count, a.down_count, a.created_at from comments a left join commits_comments b on a.comment_index = b.comment_index where a.email = ? AND b.is_checked = 0 Order by created_at desc;
+      select c.comment_index as commentId, c.email, c.content, c.up_count as upCount,
+        c.down_count as downCount, c.created_at as createdAt from comments c
+        left join commits_comments cc on c.comment_index = cc.comment_index where NOT email = ? AND cc.is_checked = 0; 
       `;
 
       const queryReq = await conn.query(alertBoardQuery + alertCommitQuery, [arg.email, arg.email]);

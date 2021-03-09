@@ -108,13 +108,16 @@ const commitModule = {
   },
   commitAlertList: async (req: Request, res: Response): Promise<Response> => {
     try {
-      const { loginType } = req.body;
+      const { loginType } = req.query;
       const { authorization } = req.headers;
-      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
+      console.log(loginType, authorization);
+
+      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), Number(loginType));
+      console.log(email);
       req.body.email = email;
 
       const alertList = await commitModels.commitAlertList(req.body);
-      return res.send({ alertList });
+      return res.json(alertList);
     } catch (err) {
       return res.send(err);
     }
