@@ -17,14 +17,14 @@ const commitModels = {
       const commitIdx = JSON.parse(JSON.stringify(commitResponse[0])).insertId;
 
       const findMergeCountSql = `
-        SELECT COUNT(merge_check) as cnt FROM board_commits WHERE merge_check = 1;
+        SELECT COUNT(merge_check) as cnt FROM boards_commits WHERE merge_check = 1;
       `;
       const findMergeCount = await conn.query(findMergeCountSql);
 
       const count = JSON.parse(JSON.stringify(findMergeCount[0]))[0].cnt;
 
       const createBoardCommitSql = `
-        INSERT INTO board_commits (commit_index, board_index, depth) VALUES (?, ?, ?);
+        INSERT INTO boards_commits (commit_index, board_index, depth) VALUES (?, ?, ?);
       `;
 
       await conn.query(createBoardCommitSql, [commitIdx, args.boardIndex, count + 1]);
@@ -85,7 +85,7 @@ const commitModels = {
     try {
       const alertListSql = `
       SELECT c.title, c.content, c.up_count, c.email, c.created_at FROM boards AS b
-      INNER JOIN board_commits AS bc
+      INNER JOIN boards_commits AS bc
       ON b.board_index = bc.board_index
       INNER JOIN commits AS c
       ON bc.commit_index = c.commit_index

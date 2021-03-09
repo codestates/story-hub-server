@@ -6,7 +6,7 @@ const commentRouter = Router();
 
 commentRouter
   .get('/list', commentModule.list)
-  .get('/alert_list', commentModule.alert_list)
+  .get('/alertlist', commentModule.alert_list)
   .get('/info', commentModule.info)
   .post('/create', commentModule.create)
   .put('/', commentModule.modify)
