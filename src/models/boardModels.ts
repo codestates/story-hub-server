@@ -242,7 +242,13 @@ const boardModels = {
     const conn = await connect();
 
     const favoriteListSql = `
-      SELECT * FROM user_board_favorites WHERE email = ? ORDER BY created_at DESC;
+    SELECT u.nickname, b.title, b.up_count, b.created_at FROM users_boards_favorites as ubf
+    LEFT JOIN boards as b
+    ON b.board_index = ubf.board_index
+    LEFT JOIN users as u
+    ON u.email = b.email
+    WHERE ubf.email = ?
+    ORDER BY ubf.created_at DESC;
     `;
     const favoriteList = await conn.query(favoriteListSql, [args.email]);
     const favoriteListArr = JSON.parse(JSON.stringify(favoriteList[0]));
@@ -253,14 +259,23 @@ const boardModels = {
     const conn = await connect();
 
     try {
+      console.log(args);
       const result = [
-        'SELECT title as boardTitle, content as boardContent FROM boards WHERE email = ?;',
-        'SELECT title as commitTitle, up_count as commitUpCount, created_at FROM commits WHERE email = ?;',
-        'SELECT content as commentContent, up_count FROM comments WHERE email = ?;',
+        'SELECT title, content, up_count FROM boards WHERE board_index = 46;',
+
+        `SELECT c.title, c.up_count, c.created_at FROM commits as c
+          LEFT JOIN boards_commits as bc
+          ON c.commit_index = bc.commit_index
+          WHERE bc.board_index = ?`,
+
+        `SELECT c.content, c.up_count, c.created_at FROM comments as c
+          LEFT JOIN boards_comments as bc
+          ON c.comment_index = bc.comment_index
+          WHERE bc.board_index = ?`,
       ];
       const detailList = await Promise.all(
         result.map(async (item) => {
-          const detailListInfo = await conn.query(item, [args.email]);
+          const detailListInfo = await conn.query(item, [args.boardIndex]);
           const detailListArr = JSON.parse(JSON.stringify(detailListInfo[0]));
           return detailListArr;
         })

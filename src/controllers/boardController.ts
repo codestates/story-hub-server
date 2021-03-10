@@ -103,42 +103,39 @@ const boardModule = {
   },
   info: async (req: Request, res: Response): Promise<Response> => {
     try {
-      const { loginType } = req.body;
+      const { loginType } = req.query;
       const { authorization } = req.headers;
-      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
+      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), Number(loginType));
       req.body.email = email;
 
       const boardInfo = await boardModels.myPageInfo(req.body);
 
-      return res.send({ boardInfo });
+      return res.send(boardInfo);
     } catch (err) {
       return res.send(err);
     }
   },
   favorite: async (req: Request, res: Response): Promise<Response> => {
     try {
-      const { loginType } = req.body;
+      const { loginType } = req.query;
       const { authorization } = req.headers;
-      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
+      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), Number(loginType));
       req.body.email = email;
 
       const favoriteInfo = await boardModels.myFavoriteList(req.body);
 
-      return res.send({ favoriteInfo });
+      return res.send(favoriteInfo);
     } catch (err) {
       return res.send(err);
     }
   },
   mypageDetail: async (req: Request, res: Response): Promise<Response> => {
     try {
-      const { loginType } = req.body;
-      const { authorization } = req.headers;
-      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
-      req.body.email = email;
-
+      const { boardIndex } = req.query;
+      req.body.boardIndex = boardIndex;
       const mypageDetailInfo = await boardModels.mypageDetailList(req.body);
 
-      return res.send({ mypageDetailInfo });
+      return res.send(mypageDetailInfo);
     } catch (err) {
       return res.send(err);
     }
@@ -152,7 +149,7 @@ const boardModule = {
 
       const storyDetailInfo = await boardModels.storyDetailList(req.body);
 
-      return res.send({ storyDetailInfo });
+      return res.send(storyDetailInfo);
     } catch (err) {
       return res.send(err);
     }
