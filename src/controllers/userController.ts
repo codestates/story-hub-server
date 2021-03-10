@@ -73,9 +73,9 @@ const userModule = {
   info: async (req: Request, res: Response): Promise<Response> => {
     try {
       const token = String(req.headers.authorization?.split(' ')[1]);
-      const { loginType } = req.body;
-      const { email, nickname, userName } = await getUserInfo(token, loginType);
-
+      const { loginType } = req.query;
+      const { email, nickname, userName } = await getUserInfo(token, Number(loginType));
+      console.log(token, Number(loginType));
       return res.json({
         data: {
           email,

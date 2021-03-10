@@ -54,7 +54,7 @@ const commitModels = {
 
     try {
       const listSql = `
-        SELECT title, up_count, created_at FROM commits WHERE email = ? ORDER BY c.created_at DESC;
+        SELECT title, up_count, created_at FROM commits WHERE email = ? ORDER BY created_at DESC;
       `;
 
       const list = await conn.query(listSql, [args.email]);
