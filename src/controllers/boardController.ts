@@ -9,7 +9,6 @@ const boardModule = {
       const { authorization } = req.headers;
       const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
       req.body.email = email;
-
       const result = await boardModels.createBoard(req.body);
       if (result === 'OK') {
         return res.send({ message: 'OK' });

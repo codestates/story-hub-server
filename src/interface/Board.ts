@@ -2,7 +2,8 @@ export interface AddBoard {
   email?: string;
   title: string;
   content: string;
-  discription: string;
+  description: string;
+  category: string;
   optionName: string;
   genreName: string[];
   minLength: number;

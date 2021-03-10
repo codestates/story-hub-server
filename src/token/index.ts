@@ -1,6 +1,6 @@
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
-import { userInfo } from '../interface/User';
+import { userInfo } from '../interface/user';
 
 const ACCESS_SECRET: string = String(process.env.ACCESS_TOKEN_SECRET);
 
