@@ -84,16 +84,20 @@ const commitModels = {
 
     try {
       const alertListSql = `
-      SELECT c.commit_index as commitIndex, c.title, c.content, c.up_count as upCount, c.down_count as downCount,c.email, c.created_at as createdAt FROM boards AS b
-      INNER JOIN boards_commits AS bc
-      ON b.board_index = bc.board_index
-      INNER JOIN commits AS c
-      ON bc.commit_index = c.commit_index
-      WHERE b.email = ?
-      ORDER BY c.created_at DESC
+      select c.commit_index, c.title, c.content, c.up_count as upCount, c.down_count as downCount,
+      c.visit_count as visitCount, c.created_at as createdAt, u.nickname from commits c
+      left join boards_commits bc
+        on c.commit_index = bc.commit_index
+      left join boards b
+        on bc.board_index = b.board_index
+      left join users u
+        on c.email = u.email
+      where b.email = ?
+        AND NOT c.email = ?
+        AND bc.is_checked = 0;
       `;
 
-      const alertListResponse = await conn.query(alertListSql, [args.email]);
+      const alertListResponse = await conn.query(alertListSql, [args.email, args.email]);
       const alertList = JSON.parse(JSON.stringify(alertListResponse[0]));
 
       return alertList;
