@@ -13,6 +13,7 @@ import {
 const boardModels = {
   createBoard: async (args: AddBoard): Promise<string> => {
     try {
+      console.log(args);
       const conn = await connect();
 
       const countBoard = `
@@ -26,14 +27,21 @@ const boardModels = {
 
       // insert board
       const insertBoardSql = `
-      INSERT INTO boards (email, title, content, description) Values (?, ?, ?, ?)
+      INSERT INTO boards (email, title, content, description, category) Values (?, ?, ?, ?, ?)
       `;
-      await conn.query(insertBoardSql, [args.email, args.title, args.content, args.discription]);
+      await conn.query(insertBoardSql, [
+        args.email,
+        args.title,
+        args.content,
+        args.description,
+        args.category,
+      ]);
+      console.log('insert board');
 
       const insertCommitOptionSql = `
-        INSERT INTO commit_options (board_index, option_name, min_length, max_length, etc) VALUES (?, ?, ?, ?, ?);
+        INSERT INTO commits_options (board_index, option_name, min_length, max_length, etc) VALUES (?, ?, ?, ?, ?);
       `;
-
+      console.log(findIndex);
       await conn.query(insertCommitOptionSql, [
         findIndex,
         args.optionName,
@@ -42,19 +50,9 @@ const boardModels = {
         args.etc || null,
       ]);
 
-      const insertLoop = async () => {
-        const genreSql = `
-          INSERT INTO board_genres (board_index, genre_code) VALUES (?, ?);
-        `;
-        Promise.all(
-          args.genreName.map(async (genre) => {
-            await conn.query(genreSql, [findIndex, genre]);
-          })
-        );
-      };
-      insertLoop();
       return 'OK';
     } catch (err) {
+      console.log(err);
       return err;
     }
   },
