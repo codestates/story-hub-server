@@ -84,7 +84,7 @@ const commitModels = {
 
     try {
       const alertListSql = `
-      select c.commit_index, c.title, c.content, c.up_count as upCount, c.down_count as downCount,
+      select c.commit_index as commitIndex, c.title, c.content, c.up_count as upCount, c.down_count as downCount,
       c.visit_count as visitCount, c.created_at as createdAt, u.nickname from commits c
       left join boards_commits bc
         on c.commit_index = bc.commit_index
