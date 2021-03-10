@@ -84,7 +84,7 @@ const commitModels = {
 
     try {
       const alertListSql = `
-      SELECT c.title, c.content, c.up_count, c.email, c.created_at FROM boards AS b
+      SELECT c.commit_index, c.title, c.content, c.up_count, c.email, c.created_at FROM boards AS b
       INNER JOIN boards_commits AS bc
       ON b.board_index = bc.board_index
       INNER JOIN commits AS c
