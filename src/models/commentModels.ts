@@ -223,17 +223,40 @@ const commentModels = {
     try {
       const conn = await connect();
       const alertBoardQuery = `
-        select c.comment_index as commentId, c.email, c.content, c.up_count as upCount,
-        c.down_count as downCount, c.created_at as createdAt from comments c
-        left join boards_comments bc on c.comment_index = bc.comment_index where NOT email = ? AND bc.is_checked = 0; 
+      select c.comment_index as commentIndex, c.content, c.up_count as upCount,
+      c.down_count as downCount, c.created_at as createdAt, u.nickname 
+        from comments c
+      left join boards_comments bc
+        on c.comment_index = bc.comment_index
+      left join boards b
+        on b.board_index = bc.board_index
+      left join users u
+        on c.email = u.email 
+      where b.email = ?
+        and NOT c.email = ?
+        and bc.is_checked = 0;
       `;
       const alertCommitQuery = `
-      select c.comment_index as commentId, c.email, c.content, c.up_count as upCount,
-        c.down_count as downCount, c.created_at as createdAt from comments c
-        left join commits_comments cc on c.comment_index = cc.comment_index where NOT email = ? AND cc.is_checked = 0; 
+        select c.comment_index as commentIndex, c.content, c.up_count as upCount, 
+        c.down_count as downCount, c.created_at as createdAt, u.nickname 
+          from comments c
+        left join commits_comments cc
+          on c.comment_index = cc.comment_index
+        left join commits cm
+          on cc.commit_index = cm.commit_index
+        left join users u
+          on c.email = u.email 
+        where cm.email = ?
+          and NOT c.email = ?
+          and cc.is_checked = 0;
       `;
 
-      const queryReq = await conn.query(alertBoardQuery + alertCommitQuery, [arg.email, arg.email]);
+      const queryReq = await conn.query(alertBoardQuery + alertCommitQuery, [
+        arg.email,
+        arg.email,
+        arg.email,
+        arg.email,
+      ]);
       const result = JSON.parse(JSON.stringify(queryReq[0]));
       const boardAlert = result[0];
       const commitAlert = result[1];
