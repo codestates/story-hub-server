@@ -9,7 +9,7 @@ const userModels = {
     try {
       const conn = await connect();
       const idCheckQuery = `
-        SELECT * FROM USERS WHERE email =? ;
+        SELECT * FROM users WHERE email =? ;
       `;
       const idCheck = await conn.query(idCheckQuery, [arg.email]);
       if (idCheck[0].toString().length === 0) {
@@ -24,7 +24,7 @@ const userModels = {
     try {
       const conn = await connect();
       const loginCheckQuery = `
-      SELECT * FROM USERS WHERE email =? AND password =? AND is_delete = 0;
+      SELECT * FROM users WHERE email =? AND password =? AND is_delete = 0;
       `;
       const loginCheck = await conn.query(loginCheckQuery, [arg.email, arg.password]);
       if (loginCheck[0].toString().length === 0) {
@@ -47,7 +47,7 @@ const userModels = {
     const conn = await connect();
     try {
       const signupQuery = `
-      INSERT INTO USERS(email, password, user_name, nickname) values (?, ?, ?, ?);
+      INSERT INTO users(email, password, user_name, nickname) values (?, ?, ?, ?);
     `;
       await conn.query(signupQuery, [arg.email, arg.password, arg.userName, arg.nickname]);
     } catch (err) {
@@ -58,7 +58,7 @@ const userModels = {
   updateUser: async (arg: userInfo): Promise<string> => {
     const conn = await connect();
     const updateQuery = `
-      UPDATE USERS set nickname = ? where email =?;
+      UPDATE users set nickname = ? where email =?;
     `;
     await conn.query(updateQuery, [arg.nickname, arg.email]);
     const accessToken = createAccessToken({
@@ -72,7 +72,7 @@ const userModels = {
   withdrawUser: async (arg: userInfo): Promise<void> => {
     const conn = await connect();
     const withdrawQuery = `
-      UPDATE USERS set is_delete = 1 where email = ?
+      UPDATE users set is_delete = 1 where email = ?
     `;
     await conn.query(withdrawQuery, arg.email);
   },
