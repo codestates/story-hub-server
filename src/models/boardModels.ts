@@ -7,7 +7,6 @@ import {
   EmailInfo,
   SearchTitle,
   UpdateBoard,
-  storyDetail,
 } from '../interface/Board';
 
 const boardModels = {
@@ -287,10 +286,18 @@ const boardModels = {
       return err;
     }
   },
-  storyDetailList: async (args: storyDetail): Promise<string[]> => {
+  storyDetailList: async (index: string): Promise<string[]> => {
     const conn = await connect();
 
     try {
+      const findEmailSql = `
+        SELECT u.email FROM users AS u LEFT JOIN boards AS b ON u.email = b.email WHERE b.board_index = ?
+      `;
+
+      const getEmailJson = await conn.query(findEmailSql, [index]);
+      const getEmail = JSON.parse(JSON.stringify(getEmailJson))[0];
+      const { email } = getEmail[0];
+
       // 1. 해당 게시글의 nickname, description 가져오기
       // 2. 해당 게시글의 commit_option 가져오기
       // 3. 해당 게시글의 글쓴이의 다른 글
@@ -302,7 +309,7 @@ const boardModels = {
 
       const detailList = await Promise.all(
         result.map(async (item, idx) => {
-          const detailListInfo = await conn.query(item, [idx === 2 ? args.email : args.boardIndex]);
+          const detailListInfo = await conn.query(item, [idx === 2 ? email : index]);
           const detailListArr = JSON.parse(JSON.stringify(detailListInfo[0]));
           return detailListArr;
         })
@@ -338,7 +345,6 @@ const boardModels = {
       const storyContentList = JSON.parse(JSON.stringify(contentResponse[0]));
 
       return [boardUserList, storyContentList];
-
     } catch (err) {
       console.log(err);
       return err;

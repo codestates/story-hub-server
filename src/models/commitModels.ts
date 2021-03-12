@@ -260,7 +260,7 @@ const commitModels = {
     const conn = await connect();
     try {
       const mergeCheckSql = `
-        UPDATE board_commits SET merge_check = 1 WHERE commit_index = ?
+        UPDATE boards_commits SET merge_check = 1 WHERE commit_index = ?
       `;
       await conn.query(mergeCheckSql, [args.commitIndex]);
 
