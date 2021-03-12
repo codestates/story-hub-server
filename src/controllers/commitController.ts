@@ -158,14 +158,14 @@ const commitModule = {
   },
   commitDetail: async (req: Request, res: Response): Promise<Response> => {
     try {
-      const { loginType } = req.body;
+      const { commitIndex } = req.query;
+      const { loginType } = req.query;
       const { authorization } = req.headers;
-      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
-      req.body.email = email;
+      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), Number(loginType));
 
-      const detailInfo = await commitModels.commitDetail(req.body);
+      const detailInfo = await commitModels.commitDetail(String(commitIndex), String(email));
 
-      return res.send({ detailInfo });
+      return res.send({ detailInfo: detailInfo[0], isChecked: detailInfo[1] });
     } catch (err) {
       return res.send(err);
     }
