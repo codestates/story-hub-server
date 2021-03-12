@@ -1,4 +1,3 @@
-import { query } from 'express';
 import connect from '../database';
 import { commit, commitFunction, commitList } from '../interface/Commit';
 
