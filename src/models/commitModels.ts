@@ -54,12 +54,12 @@ const commitModels = {
 
     try {
       const listSql = `
-        SELECT title, up_count, created_at FROM commits WHERE email = ? ORDER BY created_at DESC;
+        SELECT commit_index, title, up_count, created_at FROM commits WHERE email = ? ORDER BY created_at DESC;
       `;
 
       const list = await conn.query(listSql, [args.email]);
       const commitsList = JSON.parse(JSON.stringify(list[0]));
-
+      console.log(commitsList);
       return commitsList;
     } catch (err) {
       return err;
