@@ -238,13 +238,17 @@ const commitModels = {
       return err;
     }
   },
-  commitList: async (args: commit): Promise<commitList> => {
+  commitList: async (boardIndex: string): Promise<commitList> => {
     const conn = await connect();
     try {
+      console.log(boardIndex);
       const getlistSql = `
-        SELECT * FROM commits WHERE board_index = ?;
+      SELECT c.title, c.content, c.created_at FROM boards_commits AS bc
+      LEFT JOIN commits AS c
+      ON bc.commit_index = c.commit_index
+      WHERE bc.board_index = ? ORDER BY c.created_at DESC;
       `;
-      const reqList = await conn.query(getlistSql, [args.boardIndex]);
+      const reqList = await conn.query(getlistSql, [boardIndex]);
       const resList = JSON.parse(JSON.stringify(reqList[0]));
 
       return { list: resList };

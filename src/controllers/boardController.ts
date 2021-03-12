@@ -156,14 +156,10 @@ const boardModule = {
   },
   storyDetailContent: async (req: Request, res: Response): Promise<Response> => {
     try {
-      const { loginType } = req.body;
-      const { authorization } = req.headers;
-      console.log(loginType, authorization);
-      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
-      req.body.email = email;
+      const { boardIndex } = req.query;
 
-      const response = await boardModels.storyDetailContent(req.body);
-      return res.send({ storyContent: response[0], genreList: response[1] });
+      const response = await boardModels.storyDetailContent(String(boardIndex));
+      return res.send({ boardInfo: response[0], commitInfo: response[1] });
     } catch (err) {
       return err;
     }

@@ -291,15 +291,18 @@ const boardModels = {
     const conn = await connect();
 
     try {
+      // 1. 해당 게시글의 nickname, description 가져오기
+      // 2. 해당 게시글의 commit_option 가져오기
+      // 3. 해당 게시글의 글쓴이의 다른 글
       const result = [
-        'SELECT b.title, b.email, b.description FROM boards AS b WHERE email = ?;',
-        'SELECT co.option_name, co.min_length, co.max_length, co.etc FROM commit_options AS co INNER JOIN boards AS b ON co.board_index = b.board_index WHERE b.email = ?',
-        'SELECT g.genre_name FROM boards AS b INNER JOIN board_genres AS bg ON b.board_index = bg.board_index INNER JOIN genres AS g ON bg.genre_code = g.genre_code WHERE b.board_index = ?',
+        'SELECT u.nickname, b.description FROM boards AS b LEFT JOIN users AS u ON u.email = b.email WHERE b.board_index = ?',
+        'SELECT co.option_name, co.min_length, co.max_length, co.etc FROM commits_options AS co INNER JOIN boards AS b ON co.board_index = b.board_index WHERE b.board_index = ?',
+        'SELECT b.title FROM boards AS b WHERE email = ?',
       ];
 
       const detailList = await Promise.all(
         result.map(async (item, idx) => {
-          const detailListInfo = await conn.query(item, [idx === 2 ? args.boardIndex : args.email]);
+          const detailListInfo = await conn.query(item, [idx === 2 ? args.email : args.boardIndex]);
           const detailListArr = JSON.parse(JSON.stringify(detailListInfo[0]));
           return detailListArr;
         })
@@ -311,34 +314,32 @@ const boardModels = {
       return err;
     }
   },
-  storyDetailContent: async (args: storyDetail): Promise<string[]> => {
+  storyDetailContent: async (boardIndex: string): Promise<string[]> => {
     const conn = await connect();
-
+    console.log('들어옴');
+    console.log(boardIndex);
     try {
+      const getBoardAndUserInfoSql = `
+      SELECT u.nickname, b.title, b.content FROM boards AS b INNER JOIN users AS u ON b.email = u.email WHERE board_index = ?;
+      `;
+
+      const boardUserInfo = await conn.query(getBoardAndUserInfoSql, [boardIndex]);
+      const boardUserList = JSON.parse(JSON.stringify(boardUserInfo[0]));
+
       const storyContentSql = `
-      SELECT b.title AS boardTitle, c.content AS commitContent, b.email AS boardEmail, c.email AS commitEmail FROM boards AS b
-      INNER JOIN board_commits AS bc
+      SELECT u.nickname, c.content AS commitContent FROM boards AS b
+      INNER JOIN boards_commits AS bc
       ON b.board_index = bc.board_index
       INNER JOIN commits AS c
       ON bc.commit_index = c.commit_index
+      INNER JOIN users AS u
+      ON u.email = c.email 
       WHERE bc.merge_check = 1 AND b.board_index = ?;
       `;
-      const contentResponse = await conn.query(storyContentSql, [args.boardIndex]);
+      const contentResponse = await conn.query(storyContentSql, [boardIndex]);
       const storyContentList = JSON.parse(JSON.stringify(contentResponse[0]));
 
-      const genreSql = `
-      SELECT g.genre_name
-      FROM boards AS b
-      INNER JOIN board_genres AS bg
-      on b.board_index = bg.board_index
-      INNER JOIN genres AS g
-      ON g.genre_code = bg.genre_code
-      WHERE b.board_index = ?;
-      `;
-      const genreResponse = await conn.query(genreSql, [args.boardIndex]);
-      const genreList = JSON.parse(JSON.stringify(genreResponse[0]));
-
-      return [storyContentList, genreList];
+      return [boardUserList, storyContentList];
     } catch (err) {
       console.log(err);
       return err;

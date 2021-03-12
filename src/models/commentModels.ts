@@ -36,9 +36,16 @@ const commentModels = {
   getCommentList: async (index: getCommentList): Promise<commentList> => {
     // TODO : 1. join을 통해서 커맨트 내용을 확인한다.
     try {
+      console.log('들어옴222');
       const conn = await connect();
       const findBoard = `
-        select * from comments a left join boards_comments b on a.comment_index = b.comment_index where b.board_index = ? order by b.comment_index desc;
+      select u.nickname, a.content, a.created_at from comments a
+      left join boards_comments b 
+      on a.comment_index = b.comment_index
+      left join users u
+      on u.email = a.email
+      where b.board_index = ?
+      order by b.comment_index desc;
       `;
       const findCommit = `
         select * from comments a left join commits_comments b on a.comment_index = b.comment_index where b.commit_index = ? order by b.comment_index desc;
