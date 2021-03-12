@@ -142,14 +142,12 @@ const boardModule = {
   },
   storyDetailInfo: async (req: Request, res: Response): Promise<Response> => {
     try {
-      const { loginType } = req.query;
       const { boardIndex } = req.query;
-      req.body.boardIndex = boardIndex;
-      const { authorization } = req.headers;
-      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), Number(loginType));
-      req.body.email = email;
+      if (boardIndex === undefined) {
+        return res.json('해당 값이 없습니다');
+      }
 
-      const storyDetailInfo = await boardModels.storyDetailList(req.body);
+      const storyDetailInfo = await boardModels.storyDetailList(String(boardIndex));
 
       return res.send(storyDetailInfo);
     } catch (err) {
@@ -158,14 +156,7 @@ const boardModule = {
   },
   storyDetailContent: async (req: Request, res: Response): Promise<Response> => {
     try {
-      const { loginType } = req.query;
       const { boardIndex } = req.query;
-      const { authorization } = req.headers;
-
-      req.body.boardIndex = boardIndex;
-      console.log(loginType, authorization);
-      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), Number(loginType));
-
 
       const response = await boardModels.storyDetailContent(String(boardIndex));
       return res.send({ boardInfo: response[0], commitInfo: response[1] });
