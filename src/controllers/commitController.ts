@@ -21,8 +21,9 @@ const commitModule = {
   },
   commitList: async (req: Request, res: Response): Promise<Response> => {
     try {
-      const { boardIndex } = req.body;
-      const list = await commitModels.commitList(boardIndex);
+      const { boardIndex } = req.query;
+      req.body.boardIndex = boardIndex;
+      const list = await commitModels.commitList(req.body);
       return res.json(list);
     } catch (err) {
       return res.send(err);

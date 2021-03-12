@@ -1,6 +1,6 @@
 export interface commit {
   email: string;
-  boardIndex?: number;
+  boardIndex?: string;
   commitIndex?: number;
   title: string;
   content: string;
@@ -13,4 +13,5 @@ export interface commitFunction {
 
 export interface commitList {
   list: (string | number)[];
+  boardIndex?: string;
 }
