@@ -5,8 +5,10 @@ import { getUserInfo } from './common/function';
 const commitModule = {
   create: async (req: Request, res: Response): Promise<Response> => {
     try {
+      console.log('들어옴');
       const { loginType } = req.body;
       const { authorization } = req.headers;
+      console.log(loginType, authorization);
       const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
       req.body.email = email;
 
@@ -21,8 +23,9 @@ const commitModule = {
   },
   commitList: async (req: Request, res: Response): Promise<Response> => {
     try {
-      const { boardIndex } = req.body;
-      const list = await commitModels.commitList(boardIndex);
+      const { boardIndex } = req.query;
+
+      const list = await commitModels.commitList(String(boardIndex));
       return res.json(list);
     } catch (err) {
       return res.send(err);
@@ -110,7 +113,7 @@ const commitModule = {
     try {
       const { loginType } = req.query;
       const { authorization } = req.headers;
-      console.log(loginType, authorization);
+      console.log(Number(loginType), authorization);
 
       const { email } = await getUserInfo(String(authorization?.split(' ')[1]), Number(loginType));
       console.log(email);

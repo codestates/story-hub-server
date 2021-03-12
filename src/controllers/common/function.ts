@@ -6,8 +6,8 @@ export default function foo(): string {
   return '';
 }
 export async function getUserInfo(token: string, loginType: number): Promise<userInfo> {
-  console.log(token, loginType);
   const verifyUserInfo = await verifyModule.verifyUser(loginType, token);
+  console.log(verifyUserInfo);
   const { email, userName, nickname } = verifyUserInfo;
   return { email, userName, nickname };
 }
