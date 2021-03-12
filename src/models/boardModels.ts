@@ -316,8 +316,6 @@ const boardModels = {
   },
   storyDetailContent: async (boardIndex: string): Promise<string[]> => {
     const conn = await connect();
-    console.log('들어옴');
-    console.log(boardIndex);
     try {
       const getBoardAndUserInfoSql = `
       SELECT u.nickname, b.title, b.content FROM boards AS b INNER JOIN users AS u ON b.email = u.email WHERE board_index = ?;
@@ -340,6 +338,7 @@ const boardModels = {
       const storyContentList = JSON.parse(JSON.stringify(contentResponse[0]));
 
       return [boardUserList, storyContentList];
+
     } catch (err) {
       console.log(err);
       return err;

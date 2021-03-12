@@ -142,9 +142,11 @@ const boardModule = {
   },
   storyDetailInfo: async (req: Request, res: Response): Promise<Response> => {
     try {
-      const { loginType } = req.body;
+      const { loginType } = req.query;
+      const { boardIndex } = req.query;
+      req.body.boardIndex = boardIndex;
       const { authorization } = req.headers;
-      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
+      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), Number(loginType));
       req.body.email = email;
 
       const storyDetailInfo = await boardModels.storyDetailList(req.body);
@@ -156,7 +158,14 @@ const boardModule = {
   },
   storyDetailContent: async (req: Request, res: Response): Promise<Response> => {
     try {
+      const { loginType } = req.query;
       const { boardIndex } = req.query;
+      const { authorization } = req.headers;
+
+      req.body.boardIndex = boardIndex;
+      console.log(loginType, authorization);
+      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), Number(loginType));
+
 
       const response = await boardModels.storyDetailContent(String(boardIndex));
       return res.send({ boardInfo: response[0], commitInfo: response[1] });
