@@ -54,12 +54,12 @@ const commitModels = {
 
     try {
       const listSql = `
-        SELECT title, up_count, created_at FROM commits WHERE email = ? ORDER BY created_at DESC;
+        SELECT commit_index, title, up_count, created_at FROM commits WHERE email = ? ORDER BY created_at DESC;
       `;
 
       const list = await conn.query(listSql, [args.email]);
       const commitsList = JSON.parse(JSON.stringify(list[0]));
-
+      console.log(commitsList);
       return commitsList;
     } catch (err) {
       return err;
@@ -69,11 +69,26 @@ const commitModels = {
   commitDelete: async (arg: commitFunction): Promise<boolean> => {
     const conn = await connect();
     try {
-      const deleteSql = `
-        DELETE from commits where email = ? AND commit_index = ?;
+      // 만약 merge_check이 1이면 삭제할 수 없습니다.
+      const findMergeCommitSql = `
+      select * from commits as c 
+      left join boards_commits as bc
+      on c.commit_index = bc.commit_index
+      where bc.merge_check = 1 AND c.commit_index = ?;
       `;
-      await conn.query(deleteSql, [arg.email, arg.commitIndex]);
-      return true;
+
+      const findMergeCommit = await conn.query(findMergeCommitSql, [arg.commitIndex]);
+      const MergeCommitJson = JSON.parse(JSON.stringify(findMergeCommit))[0];
+      console.log('sdf', MergeCommitJson);
+      console.log('sdf', MergeCommitJson.length);
+      if (MergeCommitJson.length > 0) {
+        const deleteSql = `
+          DELETE from commits where email = ? AND commit_index = ?;
+        `;
+        await conn.query(deleteSql, [arg.email, arg.commitIndex]);
+        return true;
+      }
+      return false;
     } catch (err) {
       return err;
     }
@@ -216,24 +231,54 @@ const commitModels = {
       return true;
     }
   },
-  commitDetail: async (args: commit): Promise<string[]> => {
+  commitDetail: async (commitIndex: string, email: string): Promise<string[]> => {
     const conn = await connect();
     try {
+      console.log(commitIndex);
+      const findUserSql = `
+      select * from commits where email = ? AND commit_index = ?;
+      `;
+
+      const findUserJson = await conn.query(findUserSql, [email, commitIndex]);
+      const findUser = JSON.parse(JSON.stringify(findUserJson));
+      const boardWriter = findUser[0];
+      console.log('원작자', boardWriter);
+
+      const checkDeleteUserSql = `
+      select u.email from commits as c
+      left join boards_commits as bc
+      on c.commit_index = bc.commit_index
+      left join boards as b
+      on b.board_index = bc.board_index
+      left join users as u
+      on b.email = u.email
+      where c.commit_index = ?;
+      `;
+
+      const checkDeleteUser = await conn.query(checkDeleteUserSql, [commitIndex]);
+      const checkDeleteUserJson = JSON.parse(JSON.stringify(checkDeleteUser[0]));
+      const commitWriter = checkDeleteUserJson[0].email;
+      console.log('클릭자', email);
+      console.log('작성자', commitWriter);
+      console.log(commitWriter === email);
       const detailSql = `
       SELECT c.commit_index, c.title AS commitTitle, c.content AS commitContent,
       c.visit_count, ct.email AS writer, ct.content AS commentContent, ct.created_at
       FROM commits AS c
-      LEFT JOIN commit_comments AS cc
+      LEFT JOIN commits_comments AS cc
       ON c.commit_index = cc.commit_index
       LEFT JOIN comments AS ct
       ON cc.comment_index = ct.comment_index
       WHERE c.commit_index = ?
       ORDER BY cc.created_at;
       `;
-      const result = await conn.query(detailSql, [args.commitIndex]);
-      const detailInfo = JSON.parse(JSON.stringify(result[0]));
+      const result = await conn.query(detailSql, [commitIndex]);
+      const detailInfo = JSON.parse(JSON.stringify(result))[0];
 
-      return detailInfo;
+      if (boardWriter.length > 0 || commitWriter === email) {
+        return [...detailInfo, '1'];
+      }
+      return boardWriter.length > 0 || commitWriter === email ? [...detailInfo, '1'] : detailInfo;
     } catch (err) {
       return err;
     }

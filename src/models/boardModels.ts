@@ -241,7 +241,7 @@ const boardModels = {
     const conn = await connect();
 
     const favoriteListSql = `
-    SELECT u.nickname, b.title, b.up_count, b.created_at FROM users_boards_favorites as ubf
+    SELECT u.nickname, b.board_index, b.title, b.up_count, b.created_at FROM users_boards_favorites as ubf
     LEFT JOIN boards as b
     ON b.board_index = ubf.board_index
     LEFT JOIN users as u
