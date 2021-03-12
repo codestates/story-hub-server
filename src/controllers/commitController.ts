@@ -125,12 +125,13 @@ const commitModule = {
   commitUpdateAlert: async (req: Request, res: Response): Promise<Response> => {
     try {
       const { authorization } = req.headers;
-      const { loginType, commitIndex } = req.body;
+      const { loginType, index } = req.body;
+      console.log('@@@', index);
       const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
       if (email === undefined) {
         return res.send('검증되지 않은 유저입니다.');
       }
-      await commitModels.commitUpdateAlert({ email, commitIndex });
+      await commitModels.commitUpdateAlert({ email, commitIndex: index });
       return res.send('hi');
     } catch (err) {
       return res.send(err);
