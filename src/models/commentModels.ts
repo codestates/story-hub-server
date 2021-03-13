@@ -216,7 +216,10 @@ const commentModels = {
     try {
       const conn = await connect();
       const listQuery = `
-        SELECT email, content, up_count, down_count, created_at from comments where email = ?;
+        SELECT a.email, b.board_index, c.commit_index, a.content, a.up_count, a.down_count, a.created_at from comments a 
+        left join boards_comments as b on a.comment_index = b.comment_index
+        left join commits_comments as c on a.comment_index = c.comment_index
+        where email = ?;
       `;
       const listReq = await conn.query(listQuery, arg.email);
       const listRes = JSON.parse(JSON.stringify(listReq[0]));

@@ -8,9 +8,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint --fix src/**/*.ts",
-    "aws:start" :"pm2 start ./dist/index.js",
-    "aws:stop" : "pm2 stop ./dist/index.js",
-    "aws:restart" : "pm2 restart ./dist/index.js"
+    "aws:start": "pm2 start ./dist/index.js",
+    "aws:stop": "pm2 stop ./dist/index.js",
+    "aws:restart": "pm2 restart ./dist/index.js"
   },
   "repository": {
     "type": "git",
