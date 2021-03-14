@@ -17,9 +17,12 @@ const commitModels = {
       const commitIdx = JSON.parse(JSON.stringify(commitResponse[0])).insertId;
 
       const findMergeCountSql = `
-        SELECT COUNT(merge_check) as cnt FROM boards_commits WHERE merge_check = 1;
+        SELECT COUNT(merge_check) as cnt FROM boards_commits AS bc
+        LEFT JOIN boards AS b
+        ON bc.board_index = b.board_index
+        WHERE merge_check = 1 AND bc.board_index = ?;
       `;
-      const findMergeCount = await conn.query(findMergeCountSql);
+      const findMergeCount = await conn.query(findMergeCountSql, [args.boardIndex]);
 
       const count = JSON.parse(JSON.stringify(findMergeCount[0]))[0].cnt;
 
@@ -71,26 +74,26 @@ const commitModels = {
   commitDelete: async (arg: commitFunction): Promise<boolean> => {
     const conn = await connect();
     try {
+      console.log('delete 넘어옴');
       // 만약 merge_check이 1이면 삭제할 수 없습니다.
-      const findMergeCommitSql = `
-      select * from commits as c 
-      left join boards_commits as bc
-      on c.commit_index = bc.commit_index
-      where bc.merge_check = 1 AND c.commit_index = ?;
-      `;
+      // const findMergeCommitSql = `
+      // select * from commits as c
+      // left join boards_commits as bc
+      // on c.commit_index = bc.commit_index
+      // where bc.merge_check = 1 AND c.commit_index = ?;
+      // `;
 
-      const findMergeCommit = await conn.query(findMergeCommitSql, [arg.commitIndex]);
-      const MergeCommitJson = JSON.parse(JSON.stringify(findMergeCommit))[0];
-      console.log('sdf', MergeCommitJson);
-      console.log('sdf', MergeCommitJson.length);
-      if (MergeCommitJson.length > 0) {
-        const deleteSql = `
+      // const findMergeCommit = await conn.query(findMergeCommitSql, [arg.commitIndex]);
+      // const MergeCommitJson = JSON.parse(JSON.stringify(findMergeCommit))[0];
+      // console.log('sdf', MergeCommitJson);
+      // console.log('sdf', MergeCommitJson.length);
+      // if (MergeCommitJson.length > 0) {
+      // }
+      const deleteSql = `
           DELETE from commits where email = ? AND commit_index = ?;
         `;
-        await conn.query(deleteSql, [arg.email, arg.commitIndex]);
-        return true;
-      }
-      return false;
+      await conn.query(deleteSql, [arg.email, arg.commitIndex]);
+      return true;
     } catch (err) {
       return err;
     }
@@ -288,9 +291,10 @@ const commitModels = {
   commitList: async (boardIndex: string): Promise<commitList> => {
     const conn = await connect();
     try {
-      console.log(boardIndex);
+      console.log('mod', boardIndex);
       const getlistSql = `
-      SELECT u.nickname, c.title, c.content, c.created_at, c.commit_index, c.depth, c.merge_check FROM boards_commits AS bc
+      SELECT u.nickname, c.title, c.content, c.created_at, c.commit_index, bc.depth, bc.merge_check 
+      FROM boards_commits AS bc
       LEFT JOIN commits AS c
       ON bc.commit_index = c.commit_index
       LEFT JOIN users as u
@@ -299,9 +303,10 @@ const commitModels = {
       `;
       const reqList = await conn.query(getlistSql, [boardIndex]);
       const resList = JSON.parse(JSON.stringify(reqList[0]));
-
+      console.log(resList);
       return { list: resList };
     } catch (err) {
+      console.log(err);
       return err;
     }
   },
