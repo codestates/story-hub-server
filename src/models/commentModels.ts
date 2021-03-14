@@ -23,7 +23,7 @@ const commentModels = {
           INSERT INTO boards_comments (board_index, comment_index) values (?, ?);
         `;
         await conn.query(boardComment, [arg.boardIndex, commentIndex]);
-      } else if (arg.commitIndex) {
+      } if (arg.commitIndex) {
         const commitComment = `
           INSERT INTO commits_comments (commit_index, comment_index) values (?, ?);
         `;
@@ -221,7 +221,7 @@ const commentModels = {
     try {
       const conn = await connect();
       const listQuery = `
-        SELECT a.email, b.board_index, c.commit_index, a.content, a.up_count, a.down_count, a.created_at from comments a 
+        SELECT a.email, b.board_index, c.commit_index, a.content, a.up_count, a.down_count, a.created_at, a.comment_index from comments a 
         left join boards_comments as b on a.comment_index = b.comment_index
         left join commits_comments as c on a.comment_index = c.comment_index
         where email = ?;
