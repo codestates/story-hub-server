@@ -1,14 +1,15 @@
 import { Request, Response } from 'express';
 import commentModels from '../models/commentModels';
-import { getUserInfo } from './common/function';
+import tokenModule from '../token';
 
+const { verifyAccessToken } = tokenModule;
 const commentModule = {
   create: async (req: Request, res: Response): Promise<Response> => {
     const { authorization } = req.headers;
-    const { loginType, boardIndex, commitIndex, content } = req.body;
+    const { boardIndex, commitIndex, content } = req.body;
 
     try {
-      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
+      const { email } = await verifyAccessToken(String(authorization?.split(' ')[1]));
       if (email === undefined) {
         return res.send('검증되지 않은 유저입니다.');
       }
@@ -37,9 +38,8 @@ const commentModule = {
 
   alert_list: async (req: Request, res: Response): Promise<Response> => {
     const { authorization } = req.headers;
-    const { loginType } = req.query;
     try {
-      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), Number(loginType));
+      const { email } = await verifyAccessToken(String(authorization?.split(' ')[1]));
       if (email === undefined) {
         return res.send('검증되지 않은 유저입니다.');
       }
@@ -52,9 +52,9 @@ const commentModule = {
 
   alert: async (req: Request, res: Response): Promise<Response> => {
     const { authorization } = req.headers;
-    const { loginType, index } = req.body;
+    const { index } = req.body;
     try {
-      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
+      const { email } = await verifyAccessToken(String(authorization?.split(' ')[1]));
       if (email === undefined) {
         return res.send('검증되지 않은 유저입니다.');
       }
@@ -68,9 +68,9 @@ const commentModule = {
   info: async (req: Request, res: Response): Promise<Response> => {
     // 마이페이지 갈때 요청들어온다.
     const { authorization } = req.headers;
-    const { loginType } = req.query;
+
     try {
-      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), Number(loginType));
+      const { email } = await verifyAccessToken(String(authorization?.split(' ')[1]));
       if (email === undefined) {
         return res.send('검증되지 않은 유저입니다.');
       }
@@ -83,9 +83,9 @@ const commentModule = {
 
   modify: async (req: Request, res: Response): Promise<Response> => {
     const { authorization } = req.headers;
-    const { loginType, commentIndex, content } = req.body;
+    const { commentIndex, content } = req.body;
     try {
-      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
+      const { email } = await verifyAccessToken(String(authorization?.split(' ')[1]));
       if (email === undefined) {
         return res.send('검증되지 않은 유저입니다.');
       }
@@ -98,9 +98,9 @@ const commentModule = {
 
   like: async (req: Request, res: Response): Promise<Response> => {
     const { authorization } = req.headers;
-    const { loginType, commentIndex } = req.body;
+    const { commentIndex } = req.body;
     try {
-      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
+      const { email } = await verifyAccessToken(String(authorization?.split(' ')[1]));
       if (email === undefined) {
         return res.send('검증되지 않은 유저입니다.');
       }
@@ -113,9 +113,9 @@ const commentModule = {
 
   dislike: async (req: Request, res: Response): Promise<Response> => {
     const { authorization } = req.headers;
-    const { loginType, commentIndex } = req.body;
+    const { commentIndex } = req.body;
     try {
-      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
+      const { email } = await verifyAccessToken(String(authorization?.split(' ')[1]));
       if (email === undefined) {
         return res.send('검증되지 않은 유저입니다.');
       }
@@ -128,9 +128,9 @@ const commentModule = {
 
   delete: async (req: Request, res: Response): Promise<Response> => {
     const { authorization } = req.headers;
-    const { loginType, commentIndex } = req.body;
+    const { commentIndex } = req.body;
     try {
-      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
+      const { email } = await verifyAccessToken(String(authorization?.split(' ')[1]));
       if (email === undefined) {
         return res.send('검증되지 않은 유저입니다.');
       }
