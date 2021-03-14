@@ -48,7 +48,12 @@ const commentModels = {
       order by b.comment_index desc;
       `;
       const findCommit = `
-        select * from comments a left join commits_comments b on a.comment_index = b.comment_index where b.commit_index = ? order by b.comment_index desc;
+        select * from comments a left join commits_comments b 
+        on a.comment_index = b.comment_index 
+        left join users u
+        on u.email = a.email
+        where b.commit_index = ? 
+        order by b.comment_index desc;
       `;
       const commentlist = await conn.query(index.boardIndex ? findBoard : findCommit, [
         index.boardIndex ? index.boardIndex : index.commitIndex,
