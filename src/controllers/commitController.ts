@@ -47,13 +47,15 @@ const commitModule = {
   },
   commitDelete: async (req: Request, res: Response): Promise<Response> => {
     const { authorization } = req.headers;
-    const { loginType, commitIndex } = req.body;
+    const { loginType, commitIndex } = req.query;
+    req.body.commitIndex = commitIndex;
     try {
-      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
+      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), Number(loginType));
       if (email === undefined) {
         return res.send('검증되지 않은 유저입니다.');
       }
-      await commitModels.commitDelete({ email, commitIndex });
+      req.body.email = email;
+      await commitModels.commitDelete(req.body);
       return res.send('OK');
     } catch (err) {
       return res.send(err);
