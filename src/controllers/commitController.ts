@@ -51,12 +51,15 @@ const commitModule = {
     const { loginType } = req.query;
     const { commitIndex } = req.query;
     console.log(loginType, commitIndex);
+
     try {
       const { email } = await getUserInfo(String(authorization?.split(' ')[1]), Number(loginType));
       if (email === undefined) {
         return res.send('검증되지 않은 유저입니다.');
       }
+
       await commitModels.commitDelete({ email, commitIndex: Number(commitIndex) });
+
       return res.send('OK');
     } catch (err) {
       return res.send(err);

@@ -293,8 +293,10 @@ const commitModels = {
     try {
       console.log('mod', boardIndex);
       const getlistSql = `
+
       SELECT u.nickname, c.title, c.content, c.created_at, c.commit_index, bc.depth, bc.merge_check 
       FROM boards_commits AS bc
+
       LEFT JOIN commits AS c
       ON bc.commit_index = c.commit_index
       LEFT JOIN users as u
