@@ -290,9 +290,11 @@ const commitModels = {
     try {
       console.log(boardIndex);
       const getlistSql = `
-      SELECT c.title, c.content, c.created_at FROM boards_commits AS bc
+      SELECT u.nickname, c.title, c.content, c.created_at, c.commit_index, c.depth, c.merge_check FROM boards_commits AS bc
       LEFT JOIN commits AS c
       ON bc.commit_index = c.commit_index
+      LEFT JOIN users as u
+      ON u.email = c.email
       WHERE bc.board_index = ? ORDER BY c.created_at DESC;
       `;
       const reqList = await conn.query(getlistSql, [boardIndex]);
