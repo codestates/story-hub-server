@@ -57,7 +57,7 @@ const commitModels = {
 
     try {
       const listSql = `
-        SELECT c.commit_index, bc.board_index, c.content, c.title, c.up_count, c.created_at FROM commits as c
+        SELECT c.commit_index, bc.board_index, c.content, c.title, c.up_count, c.created_at, bc.depth FROM commits as c
         left join boards_commits as bc on c.commit_index = bc.commit_index
         WHERE email = ? ORDER BY created_at DESC;
       `;
