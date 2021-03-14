@@ -1,7 +1,9 @@
 import { Request, Response } from 'express';
 import oauthModels from '../models/oauthModels';
+import userModels from '../models/userModels';
 import tokenModule from '../token';
 
+const { createAccessToken } = tokenModule;
 const oauthModule = {
   kakao: async (req: Request, res: Response): Promise<Response> => {
     try {
@@ -12,8 +14,16 @@ const oauthModule = {
         String(authorization?.split(' ')[1])
       );
       const { email, userName, nickname } = response;
-      await oauthModels.signWithLogin({ email, userName, nickname });
-      return res.json({ loginType: 1 });
+      const joinCheck = await userModels.findUser({ email });
+      // false 회원가입이 되어있는 상태라면
+      if (joinCheck.onCheck) {
+        // TODO : 회원가입 시키기
+        await oauthModels.signWithLogin({ email, userName, nickname });
+      }
+
+      // TODO : 토큰 만들고 내보내기
+      const accessToken = await createAccessToken({ email, userName, nickname });
+      return res.json({ accessToken, loginType: 1 });
     } catch (err) {
       return res.send(err);
     }
@@ -24,9 +34,17 @@ const oauthModule = {
       const token = String(authorization?.split(' ')[1]);
       const response = await tokenModule.verifyGoogleAccessToken(token);
       const { userName, email, nickname } = response;
-      await oauthModels.signWithLogin({ userName, email, nickname });
+      const joinCheck = await userModels.findUser({ email });
+      // false 회원가입이 되어있는 상태라면
+      if (joinCheck.onCheck) {
+        // TODO : 회원가입 시키기
+        await oauthModels.signWithLogin({ email, userName, nickname });
+      }
 
-      return res.json({ loginType: 2 });
+      // TODO : 토큰 만들고 내보내기
+      const accessToken = await createAccessToken({ email, userName, nickname });
+
+      return res.json({ accessToken, loginType: 2 });
     } catch (err) {
       return res.send('err');
     }

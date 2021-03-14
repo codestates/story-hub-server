@@ -1,13 +1,13 @@
 import { Request, Response } from 'express';
 import boardModels from '../models/boardModels';
-import { getUserInfo } from './common/function';
+import tokenModule from '../token';
 
+const { verifyAccessToken } = tokenModule;
 const boardModule = {
   create: async (req: Request, res: Response): Promise<Response> => {
     try {
-      const { loginType } = req.body;
       const { authorization } = req.headers;
-      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
+      const { email } = await verifyAccessToken(String(authorization?.split(' ')[1]));
       req.body.email = email;
       const result = await boardModels.createBoard(req.body);
       if (result === 'OK') {
@@ -29,9 +29,8 @@ const boardModule = {
   },
   like: async (req: Request, res: Response): Promise<Response> => {
     try {
-      const { loginType } = req.body;
       const { authorization } = req.headers;
-      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
+      const { email } = await verifyAccessToken(String(authorization?.split(' ')[1]));
       req.body.email = email;
 
       const result = await boardModels.boardLike(req.body);
@@ -45,9 +44,8 @@ const boardModule = {
   },
   disLike: async (req: Request, res: Response): Promise<Response> => {
     try {
-      const { loginType } = req.body;
       const { authorization } = req.headers;
-      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
+      const { email } = await verifyAccessToken(String(authorization?.split(' ')[1]));
       req.body.email = email;
 
       const result = await boardModels.boardDisLike(req.body);
@@ -62,7 +60,6 @@ const boardModule = {
   findTitle: async (req: Request, res: Response): Promise<Response> => {
     try {
       const { title } = req.body;
-
       const list = await boardModels.searchTitle(title);
       return res.send({ list });
     } catch (err) {
@@ -71,9 +68,8 @@ const boardModule = {
   },
   delete: async (req: Request, res: Response): Promise<Response> => {
     try {
-      const { loginType } = req.body;
       const { authorization } = req.headers;
-      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
+      const { email } = await verifyAccessToken(String(authorization?.split(' ')[1]));
       req.body.email = email;
 
       const result = await boardModels.boardDelete(req.body);
@@ -89,9 +85,8 @@ const boardModule = {
   },
   update: async (req: Request, res: Response): Promise<Response> => {
     try {
-      const { loginType } = req.body;
       const { authorization } = req.headers;
-      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
+      const { email } = await verifyAccessToken(String(authorization?.split(' ')[1]));
       req.body.email = email;
 
       const result = await boardModels.boardUpdate(req.body);
@@ -103,9 +98,8 @@ const boardModule = {
   },
   info: async (req: Request, res: Response): Promise<Response> => {
     try {
-      const { loginType } = req.query;
       const { authorization } = req.headers;
-      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), Number(loginType));
+      const { email } = await verifyAccessToken(String(authorization?.split(' ')[1]));
       req.body.email = email;
 
       const boardInfo = await boardModels.myPageInfo(req.body);
@@ -117,9 +111,8 @@ const boardModule = {
   },
   favorite: async (req: Request, res: Response): Promise<Response> => {
     try {
-      const { loginType } = req.query;
       const { authorization } = req.headers;
-      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), Number(loginType));
+      const { email } = await verifyAccessToken(String(authorization?.split(' ')[1]));
       req.body.email = email;
 
       const favoriteInfo = await boardModels.myFavoriteList(req.body);

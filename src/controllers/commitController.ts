@@ -1,15 +1,13 @@
 import { Request, Response } from 'express';
 import commitModels from '../models/commitModels';
-import { getUserInfo } from './common/function';
+import tokenModule from '../token';
 
+const { verifyAccessToken } = tokenModule;
 const commitModule = {
   create: async (req: Request, res: Response): Promise<Response> => {
     try {
-      console.log('들어옴');
-      const { loginType } = req.body;
       const { authorization } = req.headers;
-      console.log(loginType, authorization);
-      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
+      const { email } = await verifyAccessToken(String(authorization?.split(' ')[1]));
       req.body.email = email;
 
       const commitCreate = await commitModels.create(req.body);
@@ -24,7 +22,6 @@ const commitModule = {
   commitList: async (req: Request, res: Response): Promise<Response> => {
     try {
       const { boardIndex } = req.query;
-      console.log('cnt', boardIndex);
 
       const list = await commitModels.commitList(String(boardIndex));
       return res.json(list);
@@ -34,9 +31,9 @@ const commitModule = {
   },
   commitUpdate: async (req: Request, res: Response): Promise<Response> => {
     const { authorization } = req.headers;
-    const { loginType, title, content, commitIndex } = req.body;
+    const { title, content, commitIndex } = req.body;
     try {
-      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
+      const { email } = await verifyAccessToken(String(authorization?.split(' ')[1]));
       if (email === undefined) {
         return res.send('검증되지 않은 유저입니다.');
       }
@@ -48,12 +45,10 @@ const commitModule = {
   },
   commitDelete: async (req: Request, res: Response): Promise<Response> => {
     const { authorization } = req.headers;
-    const { loginType } = req.query;
     const { commitIndex } = req.query;
-    console.log(loginType, commitIndex);
 
     try {
-      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), Number(loginType));
+      const { email } = await verifyAccessToken(String(authorization?.split(' ')[1]));
       if (email === undefined) {
         return res.send('검증되지 않은 유저입니다.');
       }
@@ -67,9 +62,9 @@ const commitModule = {
   },
   commitLike: async (req: Request, res: Response): Promise<Response> => {
     const { authorization } = req.headers;
-    const { loginType, commitIndex } = req.body;
+    const { commitIndex } = req.body;
     try {
-      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
+      const { email } = await verifyAccessToken(String(authorization?.split(' ')[1]));
       if (email === undefined) {
         return res.send('검증되지 않은 유저입니다.');
       }
@@ -81,9 +76,9 @@ const commitModule = {
   },
   commitDisLike: async (req: Request, res: Response): Promise<Response> => {
     const { authorization } = req.headers;
-    const { loginType, commitIndex } = req.body;
+    const { commitIndex } = req.body;
     try {
-      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
+      const { email } = await verifyAccessToken(String(authorization?.split(' ')[1]));
       if (email === undefined) {
         return res.send('검증되지 않은 유저입니다.');
       }
@@ -95,9 +90,8 @@ const commitModule = {
   },
   myPageCommit: async (req: Request, res: Response): Promise<Response> => {
     try {
-      const { loginType } = req.query;
       const { authorization } = req.headers;
-      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), Number(loginType));
+      const { email } = await verifyAccessToken(String(authorization?.split(' ')[1]));
       req.body.email = email;
 
       const commitList = await commitModels.myPageCommit(req.body);
@@ -117,14 +111,10 @@ const commitModule = {
   },
   commitAlertList: async (req: Request, res: Response): Promise<Response> => {
     try {
-      const { loginType } = req.query;
       const { authorization } = req.headers;
-      console.log(Number(loginType), authorization);
+      const { email } = await verifyAccessToken(String(authorization?.split(' ')[1]));
 
-      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), Number(loginType));
-      console.log(email);
       req.body.email = email;
-
       const alertList = await commitModels.commitAlertList(req.body);
       return res.json(alertList);
     } catch (err) {
@@ -134,9 +124,9 @@ const commitModule = {
   commitUpdateAlert: async (req: Request, res: Response): Promise<Response> => {
     try {
       const { authorization } = req.headers;
-      const { loginType, index } = req.body;
-      console.log('@@@', index);
-      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
+      const { index } = req.body;
+
+      const { email } = await verifyAccessToken(String(authorization?.split(' ')[1]));
       if (email === undefined) {
         return res.send('검증되지 않은 유저입니다.');
       }
@@ -148,9 +138,8 @@ const commitModule = {
   },
   commitMerge: async (req: Request, res: Response): Promise<Response> => {
     try {
-      const { loginType } = req.body;
       const { authorization } = req.headers;
-      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), loginType);
+      const { email } = await verifyAccessToken(String(authorization?.split(' ')[1]));
       req.body.email = email;
 
       const result = await commitModels.commitMergeCheck(req.body);
@@ -165,9 +154,8 @@ const commitModule = {
   commitDetail: async (req: Request, res: Response): Promise<Response> => {
     try {
       const { commitIndex } = req.query;
-      const { loginType } = req.query;
       const { authorization } = req.headers;
-      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), Number(loginType));
+      const { email } = await verifyAccessToken(String(authorization?.split(' ')[1]));
 
       const detailInfo = await commitModels.commitDetail(String(commitIndex), String(email));
 

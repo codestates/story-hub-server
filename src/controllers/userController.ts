@@ -1,8 +1,9 @@
 import { Request, Response } from 'express';
 import crypto from 'crypto';
 import userModels from '../models/userModels';
-import { getUserInfo } from './common/function';
+import tokenModule from '../token';
 
+const { verifyAccessToken } = tokenModule;
 const userModule = {
   login: async (req: Request, res: Response): Promise<Response> => {
     const { email, password } = req.body;
@@ -73,9 +74,8 @@ const userModule = {
   info: async (req: Request, res: Response): Promise<Response> => {
     try {
       const token = String(req.headers.authorization?.split(' ')[1]);
-      const { loginType } = req.query;
-      const { email, nickname, userName } = await getUserInfo(token, Number(loginType));
-      console.log(token, Number(loginType));
+      const { email, nickname, userName } = await verifyAccessToken(token);
+
       return res.json({
         data: {
           email,
@@ -91,8 +91,8 @@ const userModule = {
   modify: async (req: Request, res: Response): Promise<Response> => {
     try {
       const token = String(req.headers.authorization?.split(' ')[1]);
-      const { loginType, nickname } = req.body;
-      const { email, userName } = await getUserInfo(token, loginType);
+      const { nickname } = req.body;
+      const { email, userName } = await await verifyAccessToken(token);
       const newToken = await userModels.updateUser({ email, nickname, userName });
       return res.json({
         accessToken: newToken,
@@ -105,8 +105,7 @@ const userModule = {
   withdraw: async (req: Request, res: Response): Promise<Response> => {
     try {
       const token = String(req.headers.authorization?.split(' ')[1]);
-      const { loginType } = req.body;
-      const { email } = await getUserInfo(token, loginType);
+      const { email } = await await verifyAccessToken(token);
       await userModels.withdrawUser({ email });
       return res.send('OK');
     } catch (err) {
