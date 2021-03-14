@@ -210,21 +210,20 @@ const boardModels = {
   },
   boardUpdate: async (args: UpdateBoard): Promise<string> => {
     const conn = await connect();
+    // const findBoardMergeSql = `
+    //   SELECT * FROM board_commits WHERE board_index = ?
+    // `;
+    // const findMerge = await conn.query(findBoardMergeSql, [args.boardIndex]);
+    // const findMergeArr = JSON.parse(JSON.stringify(findMerge[0]));
 
-    const findBoardMergeSql = `
-      SELECT * FROM board_commits WHERE board_index = ?
-    `;
-    const findMerge = await conn.query(findBoardMergeSql, [args.boardIndex]);
-    const findMergeArr = JSON.parse(JSON.stringify(findMerge[0]));
-
-    if (findMergeArr.length === 0) {
-      const updateSql = `
+    // if (findMergeArr.length === 0) {
+    const updateSql = `
         UPDATE boards SET title = ?, content = ? WHERE board_index = ?
       `;
-      await conn.query(updateSql, [args.title, args.content, args.boardIndex]);
-      return 'OK';
-    }
-    return 'Fail';
+    await conn.query(updateSql, [args.title, args.content, args.boardIndex]);
+    return 'OK';
+    // }
+    // return 'Fail';
   },
   myPageInfo: async (args: EmailInfo): Promise<string[]> => {
     const conn = await connect();
