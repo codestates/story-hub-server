@@ -24,6 +24,7 @@ const commitModule = {
   commitList: async (req: Request, res: Response): Promise<Response> => {
     try {
       const { boardIndex } = req.query;
+      console.log('cnt', boardIndex);
 
       const list = await commitModels.commitList(String(boardIndex));
       return res.json(list);
@@ -47,15 +48,18 @@ const commitModule = {
   },
   commitDelete: async (req: Request, res: Response): Promise<Response> => {
     const { authorization } = req.headers;
-    const { loginType, commitIndex } = req.query;
-    req.body.commitIndex = commitIndex;
+    const { loginType } = req.query;
+    const { commitIndex } = req.query;
+    console.log(loginType, commitIndex);
+
     try {
       const { email } = await getUserInfo(String(authorization?.split(' ')[1]), Number(loginType));
       if (email === undefined) {
         return res.send('검증되지 않은 유저입니다.');
       }
-      req.body.email = email;
-      await commitModels.commitDelete(req.body);
+
+      await commitModels.commitDelete({ email, commitIndex: Number(commitIndex) });
+
       return res.send('OK');
     } catch (err) {
       return res.send(err);
