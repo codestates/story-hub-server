@@ -12,7 +12,6 @@ import {
 const boardModels = {
   createBoard: async (args: AddBoard): Promise<string> => {
     try {
-      console.log(args);
       const conn = await connect();
 
       const countBoard = `
@@ -35,12 +34,10 @@ const boardModels = {
         args.description,
         args.category,
       ]);
-      console.log('insert board');
 
       const insertCommitOptionSql = `
         INSERT INTO commits_options (board_index, option_name, min_length, max_length, etc) VALUES (?, ?, ?, ?, ?);
       `;
-      console.log(findIndex);
       await conn.query(insertCommitOptionSql, [
         findIndex,
         args.optionName,
@@ -51,7 +48,6 @@ const boardModels = {
 
       return 'OK';
     } catch (err) {
-      console.log(err);
       return err;
     }
   },
@@ -257,7 +253,6 @@ const boardModels = {
     const conn = await connect();
 
     try {
-      console.log(args);
       const result = [
         'SELECT title, content, up_count FROM boards WHERE board_index = 46;',
 
@@ -281,7 +276,6 @@ const boardModels = {
 
       return detailList;
     } catch (err) {
-      console.log(err);
       return err;
     }
   },
@@ -316,7 +310,6 @@ const boardModels = {
 
       return detailList;
     } catch (err) {
-      console.log(err);
       return err;
     }
   },
@@ -345,7 +338,6 @@ const boardModels = {
 
       return [boardUserList, storyContentList];
     } catch (err) {
-      console.log(err);
       return err;
     }
   },

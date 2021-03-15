@@ -25,7 +25,6 @@ const userModule = {
         return res.status(409).send('비밀번호가 틀렸거나, 탈퇴한 유저입니다.');
       }
       const { accessToken } = login;
-      console.log(accessToken);
       return res.json({
         accessToken,
       });

@@ -8,7 +8,6 @@ const oauthModule = {
   kakao: async (req: Request, res: Response): Promise<Response> => {
     try {
       const { authorization } = req.headers;
-      console.log(authorization);
 
       const response = await tokenModule.verifyKakaoAccessToken(
         String(authorization?.split(' ')[1])

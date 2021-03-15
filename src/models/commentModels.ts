@@ -11,7 +11,7 @@ const commentModels = {
   createComment: async (arg: comment): Promise<void> => {
     try {
       const conn = await connect();
-      // ! 애초에 존재하지 않는 글, 커밋에 대해서는 댓글을 작성할 수 없다.
+
       const insertCommentSql = `
         INSERT INTO comments (email,  content) values (?, ?);
       `;
@@ -23,7 +23,8 @@ const commentModels = {
           INSERT INTO boards_comments (board_index, comment_index) values (?, ?);
         `;
         await conn.query(boardComment, [arg.boardIndex, commentIndex]);
-      } if (arg.commitIndex) {
+      }
+      if (arg.commitIndex) {
         const commitComment = `
           INSERT INTO commits_comments (commit_index, comment_index) values (?, ?);
         `;
@@ -36,7 +37,6 @@ const commentModels = {
   getCommentList: async (index: getCommentList): Promise<commentList> => {
     // TODO : 1. join을 통해서 커맨트 내용을 확인한다.
     try {
-      console.log('들어옴222');
       const conn = await connect();
       const findBoard = `
       select u.nickname, a.content, a.created_at from comments a
@@ -65,10 +65,9 @@ const commentModels = {
     }
   },
   likeComment: async (arg: likeOrDislike): Promise<boolean> => {
-    console.log(arg.commentIndex);
     try {
       const conn = await connect();
-      //! TODO : 1. 내가 좋아요한 게시물 전체를 가져오기
+
       const baseCheck = `
         SELECT comment_index from comments_up_down where email = ?; 
       `;
@@ -77,8 +76,6 @@ const commentModels = {
       const like: number[] = [];
       baseRes.map((list: any) => like.push(list.comment_index));
       if (!like.includes(arg.commentIndex)) {
-        console.log('걸린다');
-        //! TODO : 좋아요한 목록중에 입력받은 목록이 없다면 새롭게 추가해주고 up_count 늘려주기
         const newLike = `
           INSERT INTO comments_up_down (email, check_up_down, comment_index) values (?, 1, ?);
         `;
@@ -89,8 +86,6 @@ const commentModels = {
         await conn.query(countUp, arg.commentIndex);
         return false;
       }
-      console.log('안걸린다');
-      // TODO : 사용자가 이미 좋아요를 했거나 싫어요를 한 상태이다.
 
       const checkQuery = `
         SELECT check_up_down from comments_up_down where comment_index = ? AND email = ?;
@@ -98,8 +93,6 @@ const commentModels = {
       const checkReq = await conn.query(checkQuery, [arg.commentIndex, arg.email]);
       const checkRes = JSON.parse(JSON.stringify(checkReq[0]));
       if (checkRes[0].check_up_down) {
-        // ! 좋아요를 누른 상태
-        // TODO : 좋아요가 눌린 상태라면 comment에 upcount를 하나 삭제해주고 내가 좋아한 목록에서 지워준다.
         const countDown = `
         UPDATE comments SET up_count = up_count - 1 where comment_index = ? 
         `;
@@ -110,20 +103,18 @@ const commentModels = {
         await conn.query(deletelist, arg.commentIndex);
         return true;
       }
-      console.log('이미 싫어요를 눌렀어요');
-      // 싫어요가 눌린 상태라면 comment에 downcount하나를 줄이고 upcount를 늘려주고 up_down목록상태에서
+
       const countUpdate = `
         UPDATE comments SET up_count = up_count + 1, down_count = down_count -1 where comment_index = ?;
       `;
       await conn.query(countUpdate, arg.commentIndex);
-      // 싫어요 상태를 좋아요로 바꿔준다 (0) => (1)
+
       const toLike = `
         UPDATE comments_up_down SET check_up_down = 1 where comment_index = ?
       `;
       await conn.query(toLike, arg.commentIndex);
       return true;
     } catch (err) {
-      console.log(err);
       return true;
     }
   },
@@ -131,7 +122,7 @@ const commentModels = {
   dislikeComment: async (arg: likeOrDislike): Promise<boolean> => {
     try {
       const conn = await connect();
-      //! TODO : 1. 내가 좋아요, 싫어요한 게시물 전체를 가져오기
+
       const baseCheck = `
         SELECT comment_index from comments_up_down where email = ?; 
       `;
@@ -140,8 +131,6 @@ const commentModels = {
       const like: number[] = [];
       baseRes.map((list: any) => like.push(list.comment_index));
       if (!like.includes(arg.commentIndex)) {
-        console.log('걸린다');
-        //! TODO : 좋아요, 싫어요한 목록중에 입력받은 목록이 없다면 새롭게 추가해주고 down_count 늘려주기
         const newLike = `
           INSERT INTO comments_up_down (email, check_up_down, comment_index) values (?, 0, ?);
         `;
@@ -152,8 +141,6 @@ const commentModels = {
         await conn.query(countUp, arg.commentIndex);
         return false;
       }
-      console.log('안걸린다');
-      // TODO : 사용자가 이미 좋아요를 했거나 싫어요를 한 상태이다.
 
       const checkQuery = `
         SELECT check_up_down from comments_up_down where comment_index = ? AND email = ?;
@@ -161,8 +148,6 @@ const commentModels = {
       const checkReq = await conn.query(checkQuery, [arg.commentIndex, arg.email]);
       const checkRes = JSON.parse(JSON.stringify(checkReq[0]));
       if (!checkRes[0].check_up_down) {
-        // ! 싫어요를 누른 상태
-        // TODO : 싫어요가 눌린 상태라면 comment에 downcount를 하나 삭제해주고 내가 좋아한 목록에서 지워준다.
         const countDown = `
         UPDATE comments SET down_count = down_count - 1 where comment_index = ? 
         `;
@@ -173,7 +158,7 @@ const commentModels = {
         await conn.query(deletelist, arg.commentIndex);
         return true;
       }
-      console.log('이미 좋아요를 눌렀어요');
+
       // 좋아요가 눌린 상태라면 comment에 upcount하나를 줄이고 downcount를 늘려주고
       const countUpdate = `
         UPDATE comments SET up_count = up_count - 1, down_count = down_count + 1 where comment_index = ?;
@@ -186,7 +171,6 @@ const commentModels = {
       await conn.query(toLike, arg.commentIndex);
       return true;
     } catch (err) {
-      console.log(err);
       return true;
     }
   },
@@ -283,7 +267,6 @@ const commentModels = {
   alertCheck: async (arg: comment): Promise<boolean> => {
     try {
       const conn = await connect();
-      // TODO : 입력받은 커밋 인덱스가 어디 위치한지 찾는다.
       const a = `
         SELECT exists ( select * from boards_comments where comment_index = ?) as isCheck;
       `;
@@ -294,7 +277,6 @@ const commentModels = {
       const checkCommitdReq = await conn.query(b, arg.commentIndex);
       const boardRes = JSON.parse(JSON.stringify(checkboardReq[0]));
       if (boardRes[0].isCheck) {
-        console.log('보드에 댓글이 있습니다.');
         const alertUpdate = `
           UPDATE boards_comments SET is_checked = 1 where comment_index = ?;
         `;
@@ -303,7 +285,6 @@ const commentModels = {
       }
       const commitRes = JSON.parse(JSON.stringify(checkCommitdReq[0]));
       if (commitRes[0].isCheck) {
-        console.log('커밋에 댓글이 있습니다.');
         const alertUpdate = `
           UPDATE commits_comments SET is_checked = 1 where comment_index = ?;
         `;

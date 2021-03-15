@@ -34,7 +34,6 @@ const commitModels = {
 
       return 'OK';
     } catch (err) {
-      console.log(err);
       return err;
     }
   },
@@ -64,7 +63,7 @@ const commitModels = {
 
       const list = await conn.query(listSql, [args.email]);
       const commitsList = JSON.parse(JSON.stringify(list[0]));
-      console.log(commitsList);
+
       return commitsList;
     } catch (err) {
       return err;
@@ -74,21 +73,6 @@ const commitModels = {
   commitDelete: async (arg: commitFunction): Promise<boolean> => {
     const conn = await connect();
     try {
-      console.log('delete 넘어옴');
-      // 만약 merge_check이 1이면 삭제할 수 없습니다.
-      // const findMergeCommitSql = `
-      // select * from commits as c
-      // left join boards_commits as bc
-      // on c.commit_index = bc.commit_index
-      // where bc.merge_check = 1 AND c.commit_index = ?;
-      // `;
-
-      // const findMergeCommit = await conn.query(findMergeCommitSql, [arg.commitIndex]);
-      // const MergeCommitJson = JSON.parse(JSON.stringify(findMergeCommit))[0];
-      // console.log('sdf', MergeCommitJson);
-      // console.log('sdf', MergeCommitJson.length);
-      // if (MergeCommitJson.length > 0) {
-      // }
       const deleteSql = `
           DELETE from commits where email = ? AND commit_index = ?;
         `;
@@ -177,7 +161,6 @@ const commitModels = {
       await conn.query(toLike, arg.commitIndex);
       return true;
     } catch (err) {
-      console.log(err);
       return true;
     }
   },
@@ -232,14 +215,12 @@ const commitModels = {
       await conn.query(toLike, arg.commitIndex);
       return true;
     } catch (err) {
-      console.log(err);
       return true;
     }
   },
   commitDetail: async (commitIndex: string, email: string): Promise<string[]> => {
     const conn = await connect();
     try {
-      console.log(commitIndex);
       const findUserSql = `
       select * from commits where email = ? AND commit_index = ?;
       `;
@@ -247,7 +228,6 @@ const commitModels = {
       const findUserJson = await conn.query(findUserSql, [email, commitIndex]);
       const findUser = JSON.parse(JSON.stringify(findUserJson));
       const boardWriter = findUser[0];
-      console.log('원작자', boardWriter);
 
       const checkDeleteUserSql = `
       select u.email from commits as c
@@ -263,9 +243,7 @@ const commitModels = {
       const checkDeleteUser = await conn.query(checkDeleteUserSql, [commitIndex]);
       const checkDeleteUserJson = JSON.parse(JSON.stringify(checkDeleteUser[0]));
       const commitWriter = checkDeleteUserJson[0].email;
-      console.log('클릭자', email);
-      console.log('작성자', commitWriter);
-      console.log(commitWriter === email);
+
       const detailSql = `
       SELECT c.commit_index, c.title AS commitTitle, c.content AS commitContent,
       c.visit_count, ct.email AS writer, ct.content AS commentContent, ct.created_at
@@ -291,7 +269,6 @@ const commitModels = {
   commitList: async (boardIndex: string): Promise<commitList> => {
     const conn = await connect();
     try {
-      console.log('mod', boardIndex);
       const getlistSql = `
 
       SELECT u.nickname, c.title, c.content, c.created_at, c.commit_index, bc.depth, bc.merge_check 
@@ -305,10 +282,9 @@ const commitModels = {
       `;
       const reqList = await conn.query(getlistSql, [boardIndex]);
       const resList = JSON.parse(JSON.stringify(reqList[0]));
-      console.log(resList);
+
       return { list: resList };
     } catch (err) {
-      console.log(err);
       return err;
     }
   },
@@ -340,16 +316,14 @@ const commitModels = {
   commitDepth: async (): Promise<commitList> => {
     const conn = await connect();
     try {
-      console.log('sdlfiasdfasdfal');
       const findDepth = `
       select a.*, b.depth from boards a left join boards_commits b on a.board_index = b.board_index;
       `;
       const reqlist = await conn.query(findDepth, '');
-      console.log('asdlfijasdlf');
+
       const result = JSON.parse(JSON.stringify(reqlist[0]));
       return result;
     } catch (err) {
-      console.log(err);
       return err;
     }
   },
