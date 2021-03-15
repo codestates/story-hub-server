@@ -23,7 +23,7 @@ const oauthModule = {
 
       // TODO : 토큰 만들고 내보내기
       const accessToken = await createAccessToken({ email, userName, nickname });
-      return res.json({ accessToken, loginType: 1 });
+      return res.json({ accessToken });
     } catch (err) {
       return res.send(err);
     }
@@ -44,7 +44,7 @@ const oauthModule = {
       // TODO : 토큰 만들고 내보내기
       const accessToken = await createAccessToken({ email, userName, nickname });
 
-      return res.json({ accessToken, loginType: 2 });
+      return res.json({ accessToken });
     } catch (err) {
       return res.send('err');
     }

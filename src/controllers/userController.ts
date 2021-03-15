@@ -28,7 +28,6 @@ const userModule = {
       console.log(accessToken);
       return res.json({
         accessToken,
-        loginType: 0,
       });
     } catch (err) {
       return err;
@@ -75,7 +74,6 @@ const userModule = {
     try {
       const token = String(req.headers.authorization?.split(' ')[1]);
       const { email, nickname, userName } = await verifyAccessToken(token);
-
       return res.json({
         data: {
           email,

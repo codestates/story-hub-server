@@ -68,10 +68,9 @@ const boardModule = {
   },
   delete: async (req: Request, res: Response): Promise<Response> => {
     try {
-      const { loginType } = req.query;
       const { boardIndex } = req.query;
       const { authorization } = req.headers;
-      const { email } = await getUserInfo(String(authorization?.split(' ')[1]), Number(loginType));
+      const { email } = await verifyAccessToken(String(authorization?.split(' ')[1]));
       req.body.email = email;
       req.body.boardIndex = boardIndex;
 
