@@ -16,7 +16,7 @@ export default class App {
     this.middlewares();
     this.routes();
     this.app.get('/', (req: Request, res: Response) => {
-      res.send('hellworld');
+      res.send('Story-hub Server Start');
     });
   }
 
@@ -31,7 +31,11 @@ export default class App {
     this.app.use(cookieParser());
     this.app.use(
       cors({
-        origin: 'http://localhost:3000',
+        origin: [
+          'https://shapeofvoice.click',
+          'https://www.shapeofvoice.click',
+          'http://localhost:3000',
+        ],
         methods: ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'],
         credentials: true,
       })
